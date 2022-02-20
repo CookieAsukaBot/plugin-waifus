@@ -3,7 +3,12 @@ const { getRandomNumber, getRandomNumbers } = require('../utils/random-things');
 
 const url = 'https://graphql.anilist.co';
 
-// anilistRandomCharacter
+/**
+ * Hace una petición a la API con números aleatorios y toma 1 objeto del array dividido a la mitad.
+ * El array que devuelve la API está ordenado por popularidad, al dividirlo se obtiene solo "la mejor rareza".
+ * 
+ * @throws {Boolean} devuelve false si no encuentra nada.
+ */
 const anilistRandomCharacter = async () => {
     let query = `
     query ($ids : [Int]) {
