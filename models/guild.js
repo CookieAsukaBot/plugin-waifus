@@ -10,15 +10,15 @@ const schema = new Schema({
     cooldowns: {
         rolls: {
             type: Number,
-            default: 1
+            default: 5 // Minutos
         },
         claims: {
             type: Number,
-            default: 1
+            default: 10
         },
         gifts: {
             type: Number,
-            default: 1
+            default: 10
         }
     },
     limits: {
@@ -28,11 +28,11 @@ const schema = new Schema({
         },
         characters: {
             type: Number,
-            default: 0
+            default: 5000
         },
         arts: {
             type: Number,
-            default: 0
+            default: 5000
         }
     },
     banned: {
