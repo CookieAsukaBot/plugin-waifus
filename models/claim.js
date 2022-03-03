@@ -34,6 +34,9 @@ const schema = new Schema({
         type: {
             type: String, // ART, CHARACTER
             required: true
+        },
+        url: {
+            type: String
         }
     },
     character: {
@@ -44,9 +47,6 @@ const schema = new Schema({
             type: Number // 0 female, 1 male, 2 non-binary
         },
         anime: {
-            type: String
-        },
-        url: {
             type: String
         }
     }
