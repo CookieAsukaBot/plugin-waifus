@@ -15,9 +15,9 @@ const getUser = async (guild, userID) => {
     try {
         let user = await User.find(data);
         if (!user) user = await new User(data);
-        return user;
+        return status.success("SUCCESS", user);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return status.failed("DB_ERROR");
     };
 };
@@ -34,9 +34,9 @@ const getHarem = async (guild, userID, order) => {
     try {
         let harem = await Claim.find({ guild, "user.id": userID })
             .sort(order || { updatedAt: -1 });
-        return harem;
+        return status.success("SUCCESS", harem);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return status.failed("DB_ERROR");
     };
 };
@@ -46,7 +46,7 @@ const getHarem = async (guild, userID, order) => {
  * 
  * @param {String} guild ID del servidor.
  * @param {String} userID ID del usuario a encontrar y guardar.
- * @param {Object} data objeto
+ * @param {Object} data objeto.
  * @returns retorna un mensaje de éxito.
  */
 const claim = async (guild, userID, data) => {
@@ -94,9 +94,27 @@ const claim = async (guild, userID, data) => {
         await claimed.save();
         return status.success("SUCCESS", claimed);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return status.failed(`DB_ERROR`);
     };
+};
+
+/**
+ * @param {String} guild ID del servidor.
+ * @param {String} userId ID del usuario a eliminar.
+ * @param {String} claimId ID del claim (nanoid).
+ */
+const divorce = async (guild, userID, claimID) => {
+    await Claim.deleteOne({
+        id: claimID,
+        guild,
+        "user.id": userID,
+    }).then(() => {
+        return status.success("SUCCESS");
+    }).catch((error) => {
+        console.error(error);
+        return status.failed("DB_ERROR");
+    });
 };
 
 /**
@@ -109,9 +127,9 @@ const changeHaremTitle = async (guild, userID, newData) => {
         await User.updateOne({ guild, userID}, {
             "harem.title": newData
         });
-        return true;
+        return status.success("SUCCESS");
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return status.failed("DB_ERROR");
     };
 };
@@ -126,9 +144,9 @@ const changeHaremTitle = async (guild, userID, newData) => {
         await User.updateOne({ guild, userID}, {
             "harem.color": newData
         });
-        return true;
+        return status.success("SUCCESS");
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return status.failed("DB_ERROR");
     };
 };
@@ -137,6 +155,7 @@ module.exports = {
     getUser,
     getHarem,
     claim,
+    divorce, 
     changeHaremTitle,
     changeHaremColor
 };
