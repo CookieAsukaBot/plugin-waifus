@@ -42,6 +42,28 @@ const getHarem = async (guild, userID, order) => {
 };
 
 /**
+ * @param {String} guild ID del servidor.
+ * @param {String} userID ID del usuario a cambiar.
+ * @param {String} value se usa para comprobar si se aumenta o disminuye.
+ */
+const positionUser = async (guild, userID, value) => {
+    let newValue = -1;
+
+    if (value == "increase") {
+        newValue = 1;
+    };
+
+    await User.updateOne({
+        guild,
+        id: userID
+    }, {
+        $inc: {
+            "harem.count": newValue
+        }
+    }).catch(error => console.error(error));
+};
+
+/**
  * Se comprueba la existencia del usuario, después se cambia el estado de reclamación a falso, se crea el módelo a guardar, se comprueban campos extras y guarda el módelo.
  * 
  * @param {String} guild ID del servidor.
@@ -57,7 +79,10 @@ const claim = async (guild, userID, data) => {
         if (user.fun.canClaim == false) return status.failed(`USER_CANT_CLAIM`);
 
         await User.updateOne({ id: userID }, {
-            "fun.canClaim": false
+            "fun.canClaim": false,
+            $inc: {
+                "harem.count": 1
+            }
         });
 
         let claimed = new Claim({
@@ -65,7 +90,7 @@ const claim = async (guild, userID, data) => {
             guild,
             user: {
                 id: userID,
-                position: user.stats.count || 1
+                position: user.harem.count + 1
             },
             metadata: {
                 domain: data.image.domain,
@@ -100,6 +125,34 @@ const claim = async (guild, userID, data) => {
 };
 
 /**
+ * 
+ * @param {String} guild ID del servidor.
+ * @param {String} userID ID del usuario que regalará.
+ * @param {String} claimID ID del claim a regalar.
+ * @param {String} newUserID ID del usuario a regalar.
+ */
+const gift = async (guild, userID, claimID, newUserID) => {
+    let newUser = await getUser(guild, newUserID);
+
+    await Claim.updateOne({
+        id: claimID,
+        guild,
+        "user.id": userID
+    }, {
+        "user.id": newUser.id,
+        "user.position": newUser.harem.count + 1
+        // "user.tags": null
+    }).then(() => {
+        await positionUser(guild, userID, "decrease");
+        await positionUser(guild, newUserID, "increase");
+        return status.success("SUCCESS");
+    }).catch((error) => {
+        console.error(error);
+        return status.failed("DB_ERROR");
+    });
+};
+
+/**
  * @param {String} guild ID del servidor.
  * @param {String} userId ID del usuario a eliminar.
  * @param {String} claimId ID del claim (nanoid).
@@ -110,6 +163,7 @@ const divorce = async (guild, userID, claimID) => {
         guild,
         "user.id": userID,
     }).then(() => {
+        await positionUser(guild, userID, "decrease");
         return status.success("SUCCESS");
     }).catch((error) => {
         console.error(error);
@@ -139,7 +193,7 @@ const changeHaremTitle = async (guild, userID, newData) => {
  * @param {String} userID ID del usuario para hacer el cambio.
  * @param {String} newData Color nuevo/actualizado a mostrar.
  */
- const changeHaremColor = async (guild, userID, newData) => {
+const changeHaremColor = async (guild, userID, newData) => {
     try {
         await User.updateOne({ guild, userID}, {
             "harem.color": newData
@@ -155,7 +209,8 @@ module.exports = {
     getUser,
     getHarem,
     claim,
-    divorce, 
+    divorce,
+    gift,
     changeHaremTitle,
     changeHaremColor
 };
