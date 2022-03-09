@@ -28,6 +28,10 @@ const schema = new Schema({
             type: String,
             default: 'Mi harem'
         },
+        count: {
+            type: Number,
+            default: 0
+        }
     },
     fun: {
         canClaim: {
