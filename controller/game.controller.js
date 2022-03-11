@@ -27,7 +27,7 @@ const getRandomRoll = async (guild) => {
         };
 
         // WIP: ¿comprobaciones de error?
-        return status.success("SUCCESS", model);
+        return status.success("SUCCESS", model.data);
     } catch (error) {
         console.error(error);
         status.failed("BOT_ERROR");
