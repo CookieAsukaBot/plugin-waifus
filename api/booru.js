@@ -1,5 +1,5 @@
 const Booru = require('booru');
-const { getRandomNumber } = require('../utils/random-things');
+const userCtrl = require('../controller/user.controller');
 
 // Config
 const displayTags = 8;
@@ -33,10 +33,8 @@ const getRandomDanbooru = async (guild) => {
             owner: false
         };
 
-
-        let isClaimed = false; // Still wip.
-        if (isClaimed !== false) imageModel.owner = isClaimed;
-
+        let isClaimed = userCtrl.isClaimed(guild, imageModel.domain, imageModel.id);
+        if (isClaimed.message == "FOUND") imageModel.owner = isClaimed.data.user.id;
 
         // Campos extras
         if (imageModel.tags != undefined) imageModel.description += `${imageModel.tags.slice(0, displayTags).join(' ')}`;
