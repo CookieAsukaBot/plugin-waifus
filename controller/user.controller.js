@@ -140,9 +140,9 @@ const isClaimed = async (guild, domain, id) => {
         });
 
         if (claim) {
-            status.success("FOUND", claim);
+            return status.success("FOUND", claim);
         } else {
-            status.success("NOT_FOUND", claim);
+            return status.success("NOT_FOUND", claim);
         };
     } catch (error) {
         console.error(error);
