@@ -1,4 +1,5 @@
 const axios = require('axios');
+const status = require('../helpers/status');
 const { getRandomNumber, getRandomNumbers } = require('../utils/random-things');
 
 const url = 'https://graphql.anilist.co';
@@ -50,15 +51,17 @@ const anilistRandomCharacter = async () => {
     let res = await axios.post(url, payload);
     let characters = res.data.data.Page.characters;
 
-    if (characters.length == 0) return false;
+    if (characters.length == 0) return status.failed("NOT_FOUND");
 
     // Devolver
     let character = characters[getRandomNumber(1, parseInt(characters.length / 2))];
-    return character;
+    return status.success("SUCCESS", character);
 };
 
 // anilistAnimeCharacter
 // anilistAnimeCharacters
+
+// getRandomAnilist
 
 module.exports = {
     anilistRandomCharacter
