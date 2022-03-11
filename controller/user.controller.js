@@ -168,7 +168,7 @@ const gift = async (guild, userID, claimID, newUserID) => {
         "user.id": newUser.id,
         "user.position": newUser.harem.count + 1
         // "user.tags": null
-    }).then(() => {
+    }).then(async () => {
         await positionUser(guild, userID, "decrease");
         await positionUser(guild, newUserID, "increase");
         return status.success("SUCCESS");
@@ -188,7 +188,7 @@ const divorce = async (guild, userID, claimID) => {
         id: claimID,
         guild,
         "user.id": userID,
-    }).then(() => {
+    }).then(async () => {
         await positionUser(guild, userID, "decrease");
         return status.success("SUCCESS");
     }).catch((error) => {
