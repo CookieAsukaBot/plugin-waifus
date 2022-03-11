@@ -20,8 +20,9 @@ const getRandomDanbooru = async (guild) => {
         };
 
         let res = await Booru.search('danbooru', ['rating:safe random:1 -animated'], query);
+        if (res.length != 1) return status.failed("NOT_FOUND");
 
-        let imageModel = {
+        let model = {
             id: res.posts[0].id,
             domain: res.posts[0].booru.domain,
             url: res.posts[0].fileUrl,
@@ -34,22 +35,22 @@ const getRandomDanbooru = async (guild) => {
             owner: false
         };
 
-        let isClaimed = userCtrl.isClaimed(guild, imageModel.domain, imageModel.id);
-        if (isClaimed.message == "FOUND") imageModel.owner = isClaimed.data.user.id;
+        let isClaimed = userCtrl.isClaimed(guild, model.domain, model.id);
+        if (isClaimed.message == "FOUND") model.owner = isClaimed.data.user.id;
 
         // Campos extras
-        if (imageModel.tags != undefined) imageModel.description += `${imageModel.tags.slice(0, displayTags).join(' ')}`;
+        if (model.tags != undefined) model.description += `${model.tags.slice(0, displayTags).join(' ')}`;
 
-        if (Array.isArray(imageModel.source) && imageModel.source) {
-            imageModel.description += imageModel.source.forEach((source, index) =>
+        if (Array.isArray(model.source) && model.source) {
+            model.description += model.source.forEach((source, index) =>
                 `\n[Fuente (${index + 1}/${image.source.length})](${source})`
             );
         };
-        if (!Array.isArray(imageModel.source) && image.source) {
-            image.description += `\n[Fuente](${imageModel.source})`;
+        if (!Array.isArray(model.source) && model.source) {
+            model.description += `\n[Fuente](${model.source})`;
         };
 
-        return status.success("SUCCESS", imageModel);
+        return status.success("SUCCESS", model);
     } catch (error) {
         console.error(error);
         return status.failed("API_ERROR");
