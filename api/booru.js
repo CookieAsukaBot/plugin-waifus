@@ -1,4 +1,5 @@
 const Booru = require('booru');
+const status = require('../helpers/status');
 const userCtrl = require('../controller/user.controller');
 
 // Config
@@ -48,10 +49,10 @@ const getRandomDanbooru = async (guild) => {
             image.description += `\n[Fuente](${imageModel.source})`;
         };
 
-        return imageModel;
+        return status.success("SUCCESS", imageModel);
     } catch (error) {
         console.error(error);
-        return false;
+        return status.failed("API_ERROR");
     };
 };
 
