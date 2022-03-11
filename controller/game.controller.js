@@ -4,6 +4,12 @@ const { getRandomNumber } = require('../utils/random-things');
 const anilist = require('../api/anilist');
 const booru = require('../api/booru');
 
+/**
+ * Genera un número aleatorio, después base al número se elige una función de una API.
+ * 
+ * @param {String} guild ID del servidor.
+ * @returns retorna el módelo obtenido (ej.: arte o personaje)
+ */
 const getRandomRoll = async (guild) => {
     try {
         let Seed = getRandomNumber(1, 2);
