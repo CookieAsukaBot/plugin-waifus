@@ -1,6 +1,7 @@
 const axios = require('axios');
 const status = require('../helpers/status');
 const { getRandomNumber, getRandomNumbers } = require('../utils/random-things');
+const userCtrl = require('../controller/user.controller');
 
 const url = 'https://graphql.anilist.co';
 
@@ -14,28 +15,28 @@ const anilistRandomCharacter = async () => {
     let query = `
     query ($ids : [Int]) {
         Page(page: 1, perPage: 25) {
-          characters(id_in: $ids, sort:FAVOURITES_DESC) {
-            id
-            name {
-              full
-            }
-            image {
-              large
-            }
-            gender
-            media (perPage: 1, sort:POPULARITY_DESC) {
-              edges {
+            characters(id_in: $ids, sort:FAVOURITES_DESC) {
                 id
-                node {
-                  title {
-                    romaji
-                  }
+                name {
+                    full
                 }
-              }
+                image {
+                    large
+                }
+                gender
+                media (perPage: 1, sort:POPULARITY_DESC) {
+                    edges {
+                        id
+                        node {
+                            title {
+                                romaji
+                            }
+                        }
+                    }
+                }
             }
-          }
         }
-      }
+    }
     `;
 
     let variables = {
@@ -61,8 +62,42 @@ const anilistRandomCharacter = async () => {
 // anilistAnimeCharacter
 // anilistAnimeCharacters
 
-// getRandomAnilist
+/**
+ * @param {String} guild ID del servidor, para comprobar si hay una reclamación.
+ */
+const getRandomAnilist = async (guild) => {
+    try {
+        const character = await anilistRandomCharacter();
+
+        // WIP: comprobar character
+        // if (!character) return status.failed("NOT_FOUND");
+
+        let model = {
+            domain: "anilist.co",
+            id: character.id,
+            anime: character.media.edges[0].node.title.romaji,
+            name: character.name.full,
+            gender: character.gender || null,
+            url: character.image.large,
+            description: '',
+            type: "CHARACTER",
+            owner: false
+        };
+
+        model.description += `**${model.name}**`;
+        model.description += `\n${model.anime}`;
+
+        let isClaimed = await userCtrl.isClaimed(guild, model.domain, model.id);
+        if (isClaimed.message == "FOUND") model.owner = isClaimed.data.user.id;
+
+        return status.success("SUCCESS", model);
+    } catch (error) {
+        console.log(error);
+        return status.failed("API_ERROR");
+    };
+};
 
 module.exports = {
-    anilistRandomCharacter
+    anilistRandomCharacter,
+    getRandomAnilist
 };
