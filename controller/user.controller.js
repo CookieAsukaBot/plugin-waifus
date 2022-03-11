@@ -127,6 +127,32 @@ const claim = async (guild, userID, data) => {
 /**
  * 
  * @param {String} guild ID del servidor.
+ * @param {String} domain dominio a buscar.
+ * @param {String} id ID dentro del dominio.
+ * @returns si existe retorna un mensaje FOUND.
+ */
+const isClaimed = async (guild, domain, id) => {
+    try {
+        let claim = await Claim.findOne({
+            guild,
+            "metadata.domain": domain,
+            "metadata.id": id
+        });
+
+        if (claim) {
+            status.success("FOUND", claim);
+        } else {
+            status.success("NOT_FOUND", claim);
+        };
+    } catch (error) {
+        console.error(error);
+        return status.failed("DB_ERROR")
+    };
+};
+
+/**
+ * 
+ * @param {String} guild ID del servidor.
  * @param {String} userID ID del usuario que regalará.
  * @param {String} claimID ID del claim a regalar.
  * @param {String} newUserID ID del usuario a regalar.
@@ -209,6 +235,7 @@ module.exports = {
     getUser,
     getHarem,
     claim,
+    isClaimed,
     divorce,
     gift,
     changeHaremTitle,
