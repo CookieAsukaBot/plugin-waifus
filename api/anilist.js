@@ -57,6 +57,12 @@ const anilistRandomCharacter = async () => {
     // Devolver
     let character = characters[getRandomNumber(1, parseInt(characters.length / 2))];
     return status.success("SUCCESS", character);
+
+    // if (character.length != 0) {
+    //     return status.success("SUCCESS", character);
+    // } else {
+    //     return status.failed("API_ERROR");
+    // };
 };
 
 // anilistAnimeCharacter
@@ -67,17 +73,18 @@ const anilistRandomCharacter = async () => {
  */
 const getRandomAnilist = async (guild) => {
     try {
-        const character = await anilistRandomCharacter();
+        let res = await anilistRandomCharacter();
+        let character = res.data;
 
         // WIP: comprobar character
-        // if (!character) return status.failed("NOT_FOUND");
+        // if (res.status == false) return status.failed("API_ERROR");
 
         let model = {
             domain: "anilist.co",
             id: character.id,
             anime: character.media.edges[0].node.title.romaji,
             name: character.name.full,
-            gender: character.gender || null,
+            gender: character.gender,
             url: character.image.large,
             description: '',
             type: "CHARACTER",
