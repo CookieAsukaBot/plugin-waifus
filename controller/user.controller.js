@@ -14,7 +14,12 @@ const getUser = async (guild, userID) => {
     let data = { guild, id: userID };
     try {
         let user = await User.find(data);
-        if (!user) user = await new User(data);
+
+        if (user.length < 1) {
+            user = await new User(data);
+            await user.save();
+        };
+
         return status.success("SUCCESS", user);
     } catch (error) {
         console.error(error);
@@ -44,7 +49,7 @@ const getHarem = async (guild, userID, order) => {
 /**
  * @param {String} guild ID del servidor.
  * @param {String} userID ID del usuario a cambiar.
- * @param {String} value se usa para comprobar si se aumenta o disminuye.
+ * @param {String} value se usa para comprobar si se aumenta o disminuye (increase/decrease).
  */
 const positionUser = async (guild, userID, value) => {
     let newValue = -1;
