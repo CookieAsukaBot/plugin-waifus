@@ -1,6 +1,6 @@
 const Booru = require('booru');
 const status = require('../helpers/status');
-const userCtrl = require('../controller/user.controller');
+const { findClaim } = require('../controller/user.controller');
 
 // Config
 const displayTags = 8;
@@ -35,7 +35,7 @@ const getRandomDanbooru = async (guild) => {
             owner: false
         };
 
-        let isClaimed = userCtrl.isClaimed(guild, model.domain, model.id);
+        let isClaimed = await findClaim(guild, model.domain, model.id);
         if (isClaimed.message == "FOUND") model.owner = isClaimed.data.user.id;
 
         // Campos extras

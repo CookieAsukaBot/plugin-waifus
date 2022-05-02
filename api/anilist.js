@@ -1,7 +1,7 @@
 const axios = require('axios');
 const status = require('../helpers/status');
 const { getRandomNumber, getRandomNumbers } = require('../utils/random-things');
-const userCtrl = require('../controller/user.controller');
+const { findClaim } = require('../controller/user.controller');
 
 const url = 'https://graphql.anilist.co';
 
@@ -77,6 +77,7 @@ const getRandomAnilist = async (guild) => {
         let character = res.data;
 
         // WIP: comprobar character
+        // Se necesita una manera de comprobar que la API ha dado un error, no ha encontrado el personaje o no está disponible.
         // if (res.status == false) return status.failed("API_ERROR");
 
         let model = {
@@ -94,7 +95,7 @@ const getRandomAnilist = async (guild) => {
         model.description += `**${model.name}**`;
         model.description += `\n${model.anime}`;
 
-        let isClaimed = await userCtrl.isClaimed(guild, model.domain, model.id);
+        let isClaimed = await findClaim(guild, model.domain, model.id);
         if (isClaimed.message == "FOUND") model.owner = isClaimed.data.user.id;
 
         return status.success("SUCCESS", model);
