@@ -1,5 +1,6 @@
 const status = require('../helpers/status');
 const User = require('../models/user');
+const { fetchUserByID, getAvatarURL } = require('../utils/discord-utils');
 const { getUser } = require('../controller/user.controller');
 const { getRandomNumber } = require('../utils/random-things');
 
@@ -17,7 +18,7 @@ const booru = require('../api/booru');
 const userCanRoll = async (guild, userID) => {
     let player = await getUser(guild, userID);
     if (player.status == false) return status.failed("Ocurrió un error al encontrar tu usuario.");
-    player = player.data[0];
+    player = player.data;
     
     try {
         if (player.fun.rolls < 1) return status.failed(`<@${userID}>, no tienes rolls disponibles!\nEl reinicio es [placeholder].`);
@@ -63,9 +64,8 @@ const getRandomRoll = async (guild) => {
                 break;
         };
 
-        // ¿Comprobar si tiene dueño?
-
-        // WIP: ¿comprobaciones de error?
+        // workaround?: si no tiene id retorna un error. el usuario ocupará un feedback ("Ocurrió un error con la API. Vuelve a intentarlo").
+        if (!model.data.id) return status.failed("API_ERROR");
         return status.success("SUCCESS", model.data);
     } catch (error) {
         console.error(error);
@@ -73,7 +73,27 @@ const getRandomRoll = async (guild) => {
     };
 };
 
+/**
+ * Datos para el embed.
+ * 
+ * @param {String} guild ID del servidor.
+ * @param {Object} bot módelo del bot para obtener datos.
+ * @param {String} id ID del dueño (usuario).
+ * @returns retorna un Object con username, avatarURL y color del harem.
+ */
+const getClaimOwner = async (guild, bot, id) => {
+    let player = (await getUser(guild, id)).data;
+    let user = await fetchUserByID(bot, id);
+    let avatar = getAvatarURL(user);
+    return {
+        username: user.username,
+        avatarURL: avatar,
+        color: player.harem.color
+    };
+};
+
 module.exports = {
     userCanRoll,
     getRandomRoll,
+    getClaimOwner,
 };
