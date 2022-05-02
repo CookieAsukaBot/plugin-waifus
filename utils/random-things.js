@@ -19,8 +19,19 @@ const getRandomArrayItem = (array) => {
     return array[Math.floor(Math.random() * array.length)];
 };
 
+const getRandomHeart = () => {
+    let hearts = [
+        '🧡', '💛', '💚', '💙', '💜', '🤎', '🤍',
+        '❣', '💕', '💞', '💓', '💗', '💖', '💘', '💝',
+        '💟', '👫', '💑', '💏', '💋', '😍', '😘', '😻',
+        '🏩', '💒', '💌'
+    ];
+    return getRandomArrayItem(hearts);
+};
+
 module.exports = {
     getRandomNumber,
     getRandomNumbers,
-    getRandomArrayItem
+    getRandomArrayItem,
+    getRandomHeart,
 };
