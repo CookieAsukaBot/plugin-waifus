@@ -13,13 +13,11 @@ const Claim = require('../models/claim');
 const getUser = async (guild, userID) => {
     let data = { guild, id: userID };
     try {
-        let user = await User.find(data);
-
-        if (user.length < 1) {
+        let user = await User.findOne(data);
+        if (!user) {
             user = await new User(data);
             await user.save();
         };
-
         return status.success("SUCCESS", user);
     } catch (error) {
         console.error(error);
@@ -77,16 +75,18 @@ const positionUser = async (guild, userID, value) => {
  * @returns retorna un mensaje de éxito.
  */
 const claim = async (guild, userID, data) => {
-    let { anime, name, gender } = data.image;
+    // let { anime, name, gender } = data.image; but why? remove this if it works
+    let { anime, name, gender } = data;
 
     try {
-        let user = await getUser(guild, userID);
+        let user = (await getUser(guild, userID)).data;
         if (user.fun.canClaim == false) return status.failed(`USER_CANT_CLAIM`);
 
         await User.updateOne({ id: userID }, {
             "fun.canClaim": false,
             $inc: {
-                "harem.count": 1
+                "harem.count": 1,
+                "stats.claims.count": 1
             }
         });
 
@@ -98,10 +98,10 @@ const claim = async (guild, userID, data) => {
                 position: user.harem.count + 1
             },
             metadata: {
-                domain: data.image.domain,
-                id: data.image.id,
-                type: data.image.type,
-                url: data.image.url
+                domain: data.domain,
+                id: data.id,
+                type: data.type,
+                url: data.url
             }
         });
 
@@ -136,7 +136,7 @@ const claim = async (guild, userID, data) => {
  * @param {String} id ID dentro del dominio.
  * @returns si existe retorna un mensaje FOUND.
  */
-const isClaimed = async (guild, domain, id) => {
+const findClaim = async (guild, domain, id) => {
     try {
         let claim = await Claim.findOne({
             guild,
@@ -240,7 +240,7 @@ module.exports = {
     getUser,
     getHarem,
     claim,
-    isClaimed,
+    findClaim,
     divorce,
     gift,
     changeHaremTitle,
