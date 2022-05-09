@@ -1,6 +1,7 @@
 const { MessageEmbed } = require('discord.js');
 const { getAvatarURL } = require('../utils/discord-utils');
 const { getRandomHeart } = require('../utils/random-things');
+const { formatedClaimType } = require('../utils/word-things');
 const {
 	userCanRoll,
 	getRandomRoll,
@@ -26,7 +27,7 @@ const replyWithAlreadyClaimed = async (data) => {
 
 	model.owner = await getClaimOwner(message.channel.guild, bot, model.owner);
 	embed.setAuthor({
-		name: `De ${model.owner.username}`, // wip: Debería de decir "Personaje/Waifu de Usuario" o "Arte de Usuario"
+		name: `${formatedClaimType(model.metadata.type)} de ${model.owner.username}`,
 		iconURL: model.owner.avatarURL
 	});
 	embed.setColor(model.owner.color);
@@ -72,7 +73,7 @@ module.exports = {
 		} else {
 			embed.setColor(process.env.BOT_COLOR);
 			embed.setAuthor({
-				name: `Random [placeholder] para ${message.author.username}`,
+				name: `Random ${formatedClaimType(model.type, true)} para ${message.author.username}`,
 				iconURL: getAvatarURL(message.author)
 			});
 		};
@@ -81,7 +82,7 @@ module.exports = {
 		message.channel.send({
 			embeds: [embed]
 		}).then(async msg => {
-			await msg.react(getRandomHeart()); // wip: random heart opcional? A base de configuración del usuario.
+			await msg.react(getRandomHeart()); // todo: random heart opcional? A base de configuración del usuario.
 
 			let collector = await msg.createReactionCollector({
 				filter: (reaction, user) => user.id !== message.client.user.id, // wip: any reactions?
@@ -89,7 +90,6 @@ module.exports = {
 			});
 
 			collector.status = {
-				model,
 				claimed: false,
 				user: null
 			};
@@ -98,8 +98,7 @@ module.exports = {
 				let tryClaim = await claim(message.guild.id, user.id, model);
 				if (tryClaim.status == false) {
 					return message.channel.send(tryClaim.message);
-				} else {
-					collector.status.model = model;
+				} else if (tryClaim.status == true) {
 					collector.status.claimed = true;
 					collector.status.user = user;
 					await collector.stop();
@@ -113,14 +112,13 @@ module.exports = {
 					// Actualizar embed
 					embed.setColor(claimedBy.color);
 					embed.setAuthor({
-						name: `De ${claimedBy.username}`, // wip: Debería de decir "Personaje/Waifu de Usuario" o "Arte de Usuario"
+						name: `${formatedClaimType(model.type)} reclamado por ${claimedBy.username}`,
 						iconURL: claimedBy.avatarURL
 					});
 
 					await msg.edit({ embeds: [embed] });
 					await msg.reply({
-						// wip: ¿mensaje después personalizable por el usuario?
-						content: `💖 ¡**${claimedBy.username}** reclamó su ${collector.status.model.type}! 💖` // wip: actualmente envía CHARACTER o ART, hacerlo leíble
+						content: `💖 ¡**${claimedBy.username}** reclamó su ${formatedClaimType(model.type)}! 💖` // todo: ¿mensaje personalizable por el usuario?
 					});
 				};
 			});
