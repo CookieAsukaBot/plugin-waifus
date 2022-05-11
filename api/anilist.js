@@ -24,6 +24,7 @@ const anilistRandomCharacter = async () => {
                     large
                 }
                 gender
+                favourites
                 media (perPage: 1, sort:POPULARITY_DESC) {
                     edges {
                         id
@@ -55,7 +56,28 @@ const anilistRandomCharacter = async () => {
     if (characters.length == 0) return status.failed("NOT_FOUND");
 
     // Devolver
-    let character = characters[getRandomNumber(1, parseInt(characters.length / 2))];
+    let character = characters[getRandomNumber(0, parseInt(characters.length / getRandomNumber(2, 3)))];
+
+    // characters.forEach(element => {
+    //     console.log({
+    //         id: element.id,
+    //         name: element.name.full,
+    //         favourites: element.favourites
+    //     });
+    // });
+    // console.log({
+    //     total: characters.length,
+    //     randomSelection,
+    //     parsed: parseInt(randomSelection),
+    //     seed: randomSeed,
+    //     dropped: {
+    //         id: character.id,
+    //         name: character.name.full,
+    //         favourites: character.favourites
+    //     },
+    //     uwu: '-------------------------------------------------'
+    // });
+
     return status.success("SUCCESS", character);
 
     // if (character.length != 0) {
