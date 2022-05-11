@@ -75,12 +75,11 @@ const positionUser = async (guild, userID, value) => {
  * @returns retorna un mensaje de éxito.
  */
 const claim = async (guild, userID, data) => {
-    // let { anime, name, gender } = data.image; but why? remove this if it works
     let { anime, name, gender } = data;
 
     try {
         let user = (await getUser(guild, userID)).data;
-        if (user.fun.canClaim == false) return status.failed(`USER_CANT_CLAIM`);
+        if (user.fun.canClaim == false) return status.failed(`<@${userID}>, ya has reclamado!\nEl reinicio es en [cooldown here].`);
 
         await User.updateOne({ id: userID }, {
             "fun.canClaim": false,
@@ -107,7 +106,7 @@ const claim = async (guild, userID, data) => {
 
         if (anime) claimed.character.anime = anime;
         if (name) claimed.character.name = name;
-        if (gender) {
+        if (gender) { // wip:? Aquí puede que haya personajes en null, y por culpa de ello no tengan género
             switch (gender) {
                 case "Male":
                     claimed.character.gender = 1;
