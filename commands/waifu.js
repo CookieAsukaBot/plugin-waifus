@@ -27,7 +27,7 @@ const replyWithAlreadyClaimed = async (data) => {
 
 	model.owner = await getClaimOwner(message.channel.guild, bot, model.owner);
 	embed.setAuthor({
-		name: `${formatedClaimType(model.metadata.type)} de ${model.owner.username}`,
+		name: `${formatedClaimType(model.metadata.type, model.gender)} de ${model.owner.username}`,
 		iconURL: model.owner.avatarURL
 	});
 	embed.setColor(model.owner.color);
@@ -73,7 +73,7 @@ module.exports = {
 		} else {
 			embed.setColor(process.env.BOT_COLOR);
 			embed.setAuthor({
-				name: `Random ${formatedClaimType(model.type, true)} para ${message.author.username}`,
+				name: `Random ${formatedClaimType(model.type, model.gender, true)} para ${message.author.username}`,
 				iconURL: getAvatarURL(message.author)
 			});
 		};
@@ -112,13 +112,13 @@ module.exports = {
 					// Actualizar embed
 					embed.setColor(claimedBy.color);
 					embed.setAuthor({
-						name: `${formatedClaimType(model.type)} reclamado por ${claimedBy.username}`,
+						name: `${formatedClaimType(model.type, model.gender)} reclamado por ${claimedBy.username}`,
 						iconURL: claimedBy.avatarURL
 					});
 
 					await msg.edit({ embeds: [embed] });
 					await msg.reply({
-						content: `💖 ¡**${claimedBy.username}** reclamó su ${formatedClaimType(model.type)}! 💖` // todo: ¿mensaje personalizable por el usuario?
+						content: `💖 ¡**${claimedBy.username}** reclamó su ${formatedClaimType(model.type, model.gender)}! 💖` // todo: ¿mensaje personalizable por el usuario?
 					});
 				};
 			});
