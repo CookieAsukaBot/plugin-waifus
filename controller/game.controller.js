@@ -19,7 +19,7 @@ const userCanRoll = async (guild, userID) => {
     let player = await getUser(guild, userID);
     if (player.status == false) return status.failed("Ocurrió un error al encontrar tu usuario.");
     player = player.data;
-    
+
     try {
         if (player.fun.rolls < 1) return status.failed(`<@${userID}>, no tienes rolls disponibles!\nEl reinicio es [placeholder].`);
 
@@ -65,7 +65,7 @@ const getRandomRoll = async (guild) => {
         };
 
         // workaround?: si no tiene id retorna un error. el usuario ocupará un feedback ("Ocurrió un error con la API. Vuelve a intentarlo").
-        if (!model.data.id) return status.failed("API_ERROR");
+        if (!model.data) return status.failed("API_ERROR");
         return status.success("SUCCESS", model.data);
     } catch (error) {
         console.error(error);
@@ -75,6 +75,7 @@ const getRandomRoll = async (guild) => {
 
 /**
  * Datos para el embed.
+ * wip: renombrar variable
  * 
  * @param {String} guild ID del servidor.
  * @param {Object} bot módelo del bot para obtener datos.
