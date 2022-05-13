@@ -9,7 +9,6 @@ const booru = require('../api/booru');
 
 /**
  * Comprueba si el usuario existe y puede tirar.
- * Actualiza el usuario (su estadística y rolls disponibles).
  * También retorna un mensaje si al jugador le quedan 2 rolls disponibles.
  * 
  * @param {String} guild ID del servidor.
@@ -21,8 +20,24 @@ const userCanRoll = async (guild, userID) => {
     player = player.data;
 
     try {
+        let message = "";
         if (player.fun.rolls < 1) return status.failed(`<@${userID}>, no tienes rolls disponibles!\nEl reinicio es [placeholder].`);
+        if (player.fun.rolls == 3) message = `⚠ quedan **2** rolls ⚠`;
+        return status.success(message, null);
+    } catch (error) {
+        console.error(error);
+        status.failed("DB_ERROR");
+    };
+};
 
+/**
+ * Actualiza el usuario (su estadística y rolls disponibles).
+ * 
+ * @param {String} guild ID del servidor.
+ * @param {*} userID ID del usuario.
+ */
+const userUseRoll = async (guild, userID) => {
+    try {
         await User.updateOne({
             guild,
             id: userID
@@ -32,10 +47,6 @@ const userCanRoll = async (guild, userID) => {
                 "stats.rolls.count": 1
             }
         });
-
-        let message = "";
-        if (player.fun.rolls == 3) message = `⚠ quedan **2** rolls ⚠`;
-        return status.success(message, null);
     } catch (error) {
         console.error(error);
         status.failed("DB_ERROR");
@@ -95,6 +106,7 @@ const getClaimOwner = async (guild, bot, id) => {
 
 module.exports = {
     userCanRoll,
+    userUseRoll,
     getRandomRoll,
     getClaimOwner,
 };

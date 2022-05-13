@@ -4,6 +4,7 @@ const { getRandomHeart } = require('../utils/random-things');
 const { formatedClaimType } = require('../utils/word-things');
 const {
 	userCanRoll,
+	userUseRoll,
 	getRandomRoll,
 	getClaimOwner,
 } = require('../controller/game.controller');
@@ -51,6 +52,7 @@ module.exports = {
 		// Generar roll
 		let model = await getRandomRoll(message.guild.id);
 		if (model.message == "API_ERROR") return message.channel.send('Ocurrió un error con la API, vuelve a intentarlo.');
+		await userUseRoll(message.guild.id, message.author.id);
 		model = model.data;
 
 		if (canRoll.message.length > 0) model.description = `${model.description}\n\n${canRoll.message}`;
@@ -85,7 +87,7 @@ module.exports = {
 			await msg.react(getRandomHeart()); // todo: random heart opcional? A base de configuración del usuario.
 
 			let collector = await msg.createReactionCollector({
-				filter: (reaction, user) => user.id !== message.client.user.id, // wip: any reactions?
+				filter: (reaction, user) => user.id !== message.client.user.id,
 				time: 60 * 1000, // wip: se vence en el tiempo que tiene el servidor de configuración.
 			});
 
