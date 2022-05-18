@@ -8,7 +8,7 @@ const Guild = require('../models/guild');
  */
 const getGuild = async (id) => {
     try {
-        let guild = await Guild.find(id);
+        let guild = await Guild.findOne(id);
         if (!guild) guild = await new Guild({ id });
         return guild;
     } catch (error) {
@@ -19,7 +19,6 @@ const getGuild = async (id) => {
 
 /**
  * Comproba la existencia del servidor (por seguridad), comprueba la válides de los campos y actualiza los datos.
- * Nota: 1440 son minutos y equivale a 24 horas.
  * 
  * @param {String} id del servidor.
  * @param {Object} newData datos nuevos con los valores a modificar.
@@ -30,6 +29,7 @@ const getGuild = async (id) => {
     try {
         await getGuild(id);
 
+        // 1440 son minutos y equivale a 24 horas.
         if (claims < 1 || claims > 1440) return false;
         if (rolls < 1 || rolls > 1440) return false;
         if (gifts < 1 || gifts > 1440) return false;
