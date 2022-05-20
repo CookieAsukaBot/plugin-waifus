@@ -27,20 +27,34 @@ const formatedClaimType = (claimType, gender, inLowerCase) => {
 };
 
 /**
+ * work in progress (no debería de pedir tantos datos?)
+ * @param {Object} data 
+ * @returns retorna un {String} descripción para el embed
+ */
+ const haremDescriptionType = data => {
+    let { id, type, domain, name, anime, gender } = data;
+    if (type == "CHARACTER") {
+        return `**${name}**${getGenderEmoji(gender)}\n${anime}`; // agregar género (getGenderEmoji)
+    } else {
+        return `${domain} | ${id}`;
+    };
+};
+
+/**
  * Retorna emoji a base del género
  * @param {String} gender Male, Non-binary
  */
 const getGenderEmoji = (gender) => {
     let output = "";
     switch (gender) {
-        case 'Male':
-            output = " <:male:973582946927800330>";
+        case 1:
+            output = " ♂️";
             break;
-        case 'Non-binary':
-            output = " <:female:973582946957152286> <:male:973582946927800330>";
+        case 2:
+            output = " ♂️ ♀️";
             break;
         default:
-            output = " <:female:973582946957152286>";
+            output = " ♀️";
             break;
     };
     return output;
@@ -48,5 +62,6 @@ const getGenderEmoji = (gender) => {
 
 module.exports = {
     formatedClaimType,
+    haremDescriptionType,
     getGenderEmoji,
 };
