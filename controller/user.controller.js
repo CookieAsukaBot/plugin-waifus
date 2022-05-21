@@ -45,28 +45,6 @@ const getHarem = async (guild, userID, order) => {
 };
 
 /**
- * @param {String} guild ID del servidor.
- * @param {String} userID ID del usuario a cambiar.
- * @param {String} value se usa para comprobar si se aumenta o disminuye (increase/decrease).
- */
-const positionUser = async (guild, userID, value) => {
-    let newValue = -1;
-
-    if (value == "increase") {
-        newValue = 1;
-    };
-
-    await User.updateOne({
-        guild,
-        id: userID
-    }, {
-        $inc: {
-            "harem.count": newValue
-        }
-    }).catch(error => console.error(error));
-};
-
-/**
  * Se comprueba la existencia del usuario, después se cambia el estado de reclamación a falso, se crea el módelo a guardar, se comprueban campos extras y guarda el módelo.
  * 
  * @param {String} guild ID del servidor.
@@ -93,8 +71,7 @@ const claim = async (guild, userID, data) => {
             id: nanoid(12),
             guild,
             user: {
-                id: userID,
-                position: user.harem.count + 1
+                id: userID
             },
             metadata: {
                 domain: data.domain,
@@ -164,17 +141,16 @@ const findClaim = async (guild, domain, id) => {
 const gift = async (guild, userID, claimID, newUserID) => {
     let newUser = await getUser(guild, newUserID);
 
+    // user.stats.divorced.count
+    // user.stats.received.count
     await Claim.updateOne({
         id: claimID,
         guild,
         "user.id": userID
     }, {
         "user.id": newUser.id,
-        "user.position": newUser.harem.count + 1
         // "user.tags": null
     }).then(async () => {
-        await positionUser(guild, userID, "decrease");
-        await positionUser(guild, newUserID, "increase");
         return status.success("SUCCESS");
     }).catch((error) => {
         console.error(error);
@@ -193,7 +169,7 @@ const divorce = async (guild, userID, claimID) => {
         guild,
         "user.id": userID,
     }).then(async () => {
-        await positionUser(guild, userID, "decrease");
+        // "stats.divorced.count": 1
         return status.success("SUCCESS");
     }).catch((error) => {
         console.error(error);

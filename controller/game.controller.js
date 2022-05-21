@@ -109,7 +109,7 @@ const getClaimOwner = async (guild, bot, id) => {
 /**
  * Genera un controlador para el harem.
  * 
- * @param {Object} data requiere de los siguientes campos: { message, msg, embed, harem }.
+ * @param {Object} data requiere de los siguientes campos: { message, msg, embed, harem, page }.
  * @param {Array} reactions se requiere de un array. Ej. de uso: ["LEFT", "RIGHT"]
  */
 const haremReactionController = async (data, reactions) => {
@@ -131,7 +131,7 @@ const haremReactionController = async (data, reactions) => {
     let actions = {
         "LEFT": {
             emoji: '⬅',
-            requirement: harem.length > 1 // default is: true
+            requirement: harem.length > 1 // boolean
         },
         "RIGHT": {
             emoji: '➡',
@@ -233,7 +233,7 @@ const haremReactionController = async (data, reactions) => {
         }));
         embed.setImage(harem[page].metadata.url);
         embed.setFooter({
-            text: `${harem[page].user.position}/${haremSize}`
+            text: `${haremSize - page}/${haremSize}`
         });
 
         msg.edit({
@@ -278,7 +278,7 @@ const divorceReactionController = async (data) => {
         .setThumbnail(`${claim.metadata.url}`)
         .setImage(getRandomArrayItem(successGifs))
         .setFooter({
-            text: `❗ Utiliza ${process.env.BOT_PREFIX}harem para volver a mirar tu lista` // mostrar otra información
+            text: `❗ Utiliza ${process.env.BOT_PREFIX}harem para volver a mirar tu lista`
         });
 
     message.reply(getRandomArrayItem(messages))

@@ -16,10 +16,6 @@ const schema = new Schema({
             type: String,
             required: true
         },
-        position: {
-            type: Number,
-            required: true
-        },
         tags: [{
             type: String
         }]
@@ -46,7 +42,7 @@ const schema = new Schema({
         gender: {
             type: Number // 0 female, 1 male, 2 non-binary
         },
-        anime: {
+        anime: { // replace with "series" (should includes mangas too)
             type: String
         }
     }
