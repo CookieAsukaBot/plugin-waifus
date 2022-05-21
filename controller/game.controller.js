@@ -257,10 +257,15 @@ const divorceReactionController = async (data) => {
         claim
     } = data;
 
-    let messages = [
+    let messages = [ // todo: seprar esto en un settings/config.json
+        "¿Estás segura de querer el **divorcio**?",
         "¿Estás seguro de querer el **divorcio**?",
         "¿Quieres **divorciarte**?",
         "¿Aceptas el **divorcio**?"
+    ];
+
+    let successGifs = [
+        'https://c.tenor.com/KuqLqBEfs6AAAAAC/huevos-a-huevo.gif',
     ];
 
     let embed = new MessageEmbed()
@@ -271,9 +276,9 @@ const divorceReactionController = async (data) => {
         })
         .setDescription(`Te has divorciado\n${claim.metadata.domain} | ${claim.metadata.id}`)
         .setThumbnail(`${claim.metadata.url}`)
-        .setImage('https://c.tenor.com/KuqLqBEfs6AAAAAC/huevos-a-huevo.gif')
+        .setImage(getRandomArrayItem(successGifs))
         .setFooter({
-            text: `❗ Utiliza [bot.prefix][name] para volver a mirar tu lista` // mostrar otra información
+            text: `❗ Utiliza ${process.env.BOT_PREFIX}harem para volver a mirar tu lista` // mostrar otra información
         });
 
     message.reply(getRandomArrayItem(messages))
