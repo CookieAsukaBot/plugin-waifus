@@ -1,8 +1,10 @@
 const status = require('../helpers/status');
 const User = require('../models/user');
+const { MessageEmbed } = require('discord.js');
+const { getUser, divorce } = require('../controller/user.controller');
 const { fetchUserByID, getAvatarURL } = require('../utils/discord-utils');
-const { getUser } = require('../controller/user.controller');
-const { getRandomNumber } = require('../utils/random-things');
+const { getRandomNumber, getRandomArrayItem } = require('../utils/random-things');
+const { haremDescriptionType } = require('../utils/word-things');
 
 const anilist = require('../api/anilist');
 const booru = require('../api/booru');
@@ -104,9 +106,216 @@ const getClaimOwner = async (guild, bot, id) => {
     };
 };
 
+/**
+ * Genera un controlador para el harem.
+ * 
+ * @param {Object} data requiere de los siguientes campos: { message, msg, embed, harem }.
+ * @param {Array} reactions se requiere de un array. Ej. de uso: ["LEFT", "RIGHT"]
+ */
+const haremReactionController = async (data, reactions) => {
+    let {
+        message,
+        msg,
+        embed,
+        harem,
+        page
+    } = data;
+
+    // wip: Esta función debería ser más general
+    let settings = {
+        collectorDuration: 240, // (segundos) 4 minutos
+        toDoubleArrow: 30, // Necesita un harem de 30 para agregar flechas dobles
+        jumpInDouble: 10
+    };
+
+    let actions = {
+        "LEFT": {
+            emoji: '⬅',
+            requirement: harem.length > 1 // default is: true
+        },
+        "RIGHT": {
+            emoji: '➡',
+            requirement: harem.length > 1
+        },
+        "DOUBLE_LEFT": {
+            emoji: '⏪',
+            requirement: harem.length >= settings.toDoubleArrow
+        },
+        "DOUBLE_RIGHT": {
+            emoji: '⏩',
+            requirement: harem.length >= settings.toDoubleArrow
+        },
+        "DIVORCE": {
+            emoji: '🗑',
+            requirement: harem.length > 1
+        },
+        "GIFT": {
+            emoji: '🎁',
+            requirement: harem.length > 1
+        },
+    };
+    let cache = {};
+    let haremSize = harem.length;
+
+    // Agregar reacciones
+    reactions.map(async reaction => {
+        if (actions[reaction] && actions[reaction].requirement) {
+            cache[`${actions[reaction].emoji}`] = actions[reaction];
+            await msg.react(actions[reaction].emoji);
+        };
+    });
+
+    const readReaction = reaction => {
+        let emoji = cache[reaction]?.emoji;
+        if (emoji === undefined) return;
+        return cache[reaction].emoji;
+    };
+
+    // Collector
+    let collector = await msg.createReactionCollector({
+        filter: (reaction, user) => readReaction(reaction.emoji.name) && user.id !== message.client.user.id,
+        idle: settings.collectorDuration * 1000, // se multiplica por 1 segundo
+    });
+
+    collector.on('collect', async (reaction, user) => {
+        switch (reaction.emoji.name) {
+            case '⬅':
+                --page;
+                if (page <= -1) page = haremSize - 1;
+                break;
+            case '➡':
+                ++page;
+                if (page > haremSize - 1) page = 0;
+                break;
+            case '⏪':
+                page = page - settings.jumpInDouble;
+                if (page <= -1) page = haremSize;
+                break;
+            case '⏩':
+                page = page + settings.jumpInDouble;
+                if (page > haremSize) page = 0;
+                break;
+            case '🗑':
+                if (user.id === message.author.id) {
+                    await divorceReactionController({
+                        message,
+                        settings, // globalizarlo
+                        guild: message.guild.id,
+                        userID: message.author.id,
+                        claim: harem[page],
+                    });
+                    await collector.stop();
+                } else {
+                    return;
+                };
+                break;
+            case '🎁':
+                if (user.id === message.author.id) {
+                    await giftReactionController();
+                    await collector.stop();
+                } else {
+                    return;
+                };
+                break;
+            case '❌':
+                // La marca podría funcionar como elegir multiples claims para divorciar/regalar
+                break;
+        };
+
+        // Editar embed
+        embed.setDescription(haremDescriptionType({
+            id: harem[page].metadata.id,
+            type: harem[page].metadata.type,
+            domain: harem[page].metadata.domain,
+            name: harem[page]?.character.name,
+            anime: harem[page]?.character.anime,
+            gender: harem[page]?.character.gender
+        }));
+        embed.setImage(harem[page].metadata.url);
+        embed.setFooter({
+            text: `${harem[page].user.position}/${haremSize}`
+        });
+
+        msg.edit({
+            embeds: [embed]
+        });
+    });
+    collector.on('end', async () => await msg.reactions.removeAll());
+};
+
+/**
+ * Genera un controlador para el divorcio.
+ * 
+ * @param {Object} data 
+ */
+const divorceReactionController = async (data) => {
+    let {
+        message,
+        settings,
+        guild,
+        userID,
+        claim
+    } = data;
+
+    let messages = [
+        "¿Estás seguro de querer el **divorcio**?",
+        "¿Quieres **divorciarte**?",
+        "¿Aceptas el **divorcio**?"
+    ];
+
+    let embed = new MessageEmbed()
+        .setColor('GREEN')
+        .setAuthor({
+            name: `Felicidades, ${message.author.username}`,
+            iconURL: message.author.displayAvatarURL({ dynamic: true })
+        })
+        .setDescription(`Te has divorciado\n${claim.metadata.domain} | ${claim.metadata.id}`)
+        .setThumbnail(`${claim.metadata.url}`)
+        .setImage('https://c.tenor.com/KuqLqBEfs6AAAAAC/huevos-a-huevo.gif')
+        .setFooter({
+            text: `❗ Utiliza [bot.prefix][name] para volver a mirar tu lista` // mostrar otra información
+        });
+
+    message.reply(getRandomArrayItem(messages))
+        .then(async msg => {
+            await msg.react('✅');
+            await msg.react('❌');
+
+            let collector = await msg.createReactionCollector({
+                filter: (reaction, user) => (reaction.emoji.name === '✅' || reaction.emoji.name === '❌') && user.id === message.author.id,
+                idle: settings.duration * 1000
+            });
+
+            collector.on('collect', async (reaction) => {
+                switch (reaction.emoji.name) {
+                    case '✅':
+                        message.channel.send({ embeds: [embed] });
+                        await divorce(guild, userID, claim.id);
+                        break;
+                    case '❌':
+                        msg.edit(`~~${msg.content}~~`);
+                        await collector.stop();
+                        break;
+                };
+            });
+        });
+};
+
+/**
+ * Genera un controlador para el regalo.
+ * 
+ * @param {Object} data 
+ */
+const giftReactionController = async (data) => {
+    console.log('Regalo a ${data.mention.username}');
+};
+
 module.exports = {
     userCanRoll,
     userUseRoll,
     getRandomRoll,
     getClaimOwner,
+    haremReactionController,
+    divorceReactionController,
+    giftReactionController,
 };
