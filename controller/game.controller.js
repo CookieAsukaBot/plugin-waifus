@@ -233,14 +233,15 @@ const haremReactionController = async (data, reactions) => {
         }));
         embed.setImage(harem[page].metadata.url);
         embed.setFooter({
-            text: `${haremSize - page}/${haremSize}`
-        });
+            text: `${page + 1}/${haremSize}`
+        })
+        .setTimestamp(harem[page].updatedAt);
 
         msg.edit({
             embeds: [embed]
         });
     });
-    collector.on('end', async () => await msg.reactions.removeAll());
+    collector.on('end', async () => await msg.reactions.removeAll()); // bug: if the message is deleted the bot crashes
 };
 
 /**

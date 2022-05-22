@@ -22,15 +22,26 @@ const userHarem = async (message) => {
     };
 };
 
+const userInputPosition = (page, haremSize) => {
+    if (!page || isNaN(page) || page <= 0) {
+        page = 0;
+    } else {
+        --page;
+    };
+
+    if (page >= haremSize) page = haremSize - 1;
+    return page;
+};
+
 module.exports = {
     name: 'harem', // todo: enviar al dm?
     category: 'Waifu',
     description: 'Muestra tus artes y personajes reclamdos.',
     cooldown: 3,
     async execute (message, args, bot) {
-        let page = 0;
         let { user, player, harem } = await userHarem(message);
-        if (harem.length < 1) return message.reply('no hay ninguna waifu reclamada!'); // hacer un tutorial? todo: mensaje más claro
+        if (harem.length < 1) return message.reply('no hay ninguna waifu reclamada!'); // hacer un tutorial? todo: tutorial o mensaje más claro
+        let page = userInputPosition(parseInt(args), harem.length);
 
         let embed = new MessageEmbed()
             .setColor(player.harem.color)
@@ -48,8 +59,9 @@ module.exports = {
             }))
             .setImage(harem[page].metadata.url)
             .setFooter({
-                text: `1/${harem.length}`
-            });
+                text: `${page + 1}/${harem.length}`
+            })
+            .setTimestamp(harem[page].updatedAt);
 
         message.channel.send({
             embeds: [embed]
