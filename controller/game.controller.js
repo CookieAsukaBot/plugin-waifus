@@ -1,7 +1,7 @@
 const status = require('../helpers/status');
 const User = require('../models/user');
 const { MessageEmbed } = require('discord.js');
-const { getUser, divorce } = require('../controller/user.controller');
+const { getUser, gift, divorce } = require('../controller/user.controller');
 const { fetchUserByID, getAvatarURL } = require('../utils/discord-utils');
 const { getRandomNumber, getRandomArrayItem } = require('../utils/random-things');
 const { haremDescriptionType } = require('../utils/word-things');
@@ -197,7 +197,7 @@ const haremReactionController = async (data, reactions) => {
                 break;
             case '🗑':
                 if (user.id === message.author.id) {
-                    await divorceReactionController({
+                    divorceReactionController({
                         message,
                         settings, // globalizarlo
                         guild: message.guild.id,
@@ -211,7 +211,13 @@ const haremReactionController = async (data, reactions) => {
                 break;
             case '🎁':
                 if (user.id === message.author.id) {
-                    await giftReactionController();
+                    giftReactionController({
+                        message,
+                        guild: message.guild.id,
+                        userID: message.author.id,
+                        mention: message.mentions.members.first(),
+                        claim: harem[page],
+                    });
                     await collector.stop();
                 } else {
                     return;
@@ -249,7 +255,7 @@ const haremReactionController = async (data, reactions) => {
  * 
  * @param {Object} data 
  */
-const divorceReactionController = async (data) => {
+const divorceReactionController = (data) => {
     let {
         message,
         settings,
@@ -295,8 +301,8 @@ const divorceReactionController = async (data) => {
             collector.on('collect', async (reaction) => {
                 switch (reaction.emoji.name) {
                     case '✅':
-                        message.channel.send({ embeds: [embed] });
                         await divorce(guild, userID, claim.id);
+                        message.channel.send({ embeds: [embed] });
                         break;
                     case '❌':
                         msg.edit(`~~${msg.content}~~`);
@@ -312,8 +318,64 @@ const divorceReactionController = async (data) => {
  * 
  * @param {Object} data 
  */
-const giftReactionController = async (data) => {
-    console.log('Regalo a ${data.mention.username}');
+const giftReactionController = (data) => {
+    let {
+        message,
+        guild,
+        userID,
+        mention,
+        claim
+    } = data;
+
+    let successGifs = [
+        'https://c.tenor.com/9VlbkbzetVUAAAAC/present-for-you.gif',
+    ];
+
+    let embed = new MessageEmbed()
+        .setColor('PURPLE')
+        .setAuthor({
+            name: `Has regalado, ${message.author.username}`,
+            iconURL: message.author.displayAvatarURL({ dynamic: true })
+        })
+        .setDescription(`Tu regalo se entregó a **${mention.user.username}**\n${claim.metadata.domain} | ${claim.metadata.id}`)
+        .setThumbnail(`${claim.metadata.url}`)
+        .setImage(getRandomArrayItem(successGifs))
+        .setFooter({
+            text: `❗ Utiliza ${process.env.BOT_PREFIX}harem para volver a mirar tu lista`
+        });
+    
+    message.reply(`¿Quieres **regalar** a ${mention.user.tag}?\nSe requiere de que **ambos confirmen** el regalo.`)
+        .then(async msg => {
+            await msg.react('✅');
+            await msg.react('❌');
+
+            let collector = await msg.createReactionCollector({
+                filter: (reaction, user) => (reaction.emoji.name === '✅' || reaction.emoji.name === '❌') && user.id !== message.client.user.id,
+                idle: 240 * 1000 // x por 1 segundo
+            });
+
+            let userConfirmations = [];
+
+            collector.on('collect', async (reaction, user) => {
+                userConfirmations.push(user.id);
+
+                switch (reaction.emoji.name) {
+                    case '✅':
+                        if (userConfirmations.includes(userID) && userConfirmations.includes(mention.id)) {
+                            await gift(guild, userID, claim.id, mention.id);
+                            message.channel.send({ embeds: [embed] });
+                        };
+                        break;
+                    case '❌':
+                        if (userConfirmations.includes(userID) || userConfirmations.includes(mention.id)) {
+                            msg.edit(`~~*${msg.content}*~~\n**Cancelaron** el regalo.`);
+                            await collector.stop();
+                        };
+                        break;
+                };
+            });
+        });
+
 };
 
 module.exports = {
