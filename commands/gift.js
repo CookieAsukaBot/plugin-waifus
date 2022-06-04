@@ -8,13 +8,10 @@ const {
 const { haremReactionController } = require('../controller/game.controller');
 
 const userHarem = async (message) => {
-    let user = message.author;
-
     let player = (await getUser(message.guild.id, user.id)).data;
     let harem = (await getHarem(message.guild.id, user.id, null)).data;
 
     return {
-        user,
         player,
         harem
     };
@@ -39,7 +36,7 @@ module.exports = {
     usage: '[opcional: página] @mención',
     cooldown: 3,
     async execute (message, args, bot) {
-        let { user, player, harem } = await userHarem(message);
+        let { player, harem } = await userHarem(message);
         if (harem.length < 1) return message.reply('no hay ninguna waifu reclamada!');
         let page = userInputPosition(parseInt(args), harem.length);
 
@@ -51,7 +48,7 @@ module.exports = {
             .setColor(player.harem.color)
             .setAuthor({
                 name: player.harem.title,
-                iconURL: getAvatarURL(user)
+                iconURL: getAvatarURL(message.author)
             })
             .setDescription(haremDescriptionType({
                 id: harem[page].metadata.id,
