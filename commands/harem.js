@@ -38,6 +38,7 @@ module.exports = {
     name: 'harem', // todo: enviar al dm?
     category: 'Waifu',
     description: 'Muestra tus artes y personajes reclamdos.',
+    usage: '[opcional: página] @mención', // página => posición?
     cooldown: 3,
     async execute (message, args, bot) {
         let { user, player, harem } = await userHarem(message);
@@ -48,7 +49,7 @@ module.exports = {
             .setColor(player.harem.color)
             .setAuthor({
                 name: player.harem.title,
-                iconURL: getAvatarURL(user)
+                iconURL: getAvatarURL(user) // has a bug: if you mention someone it will crash (mention has different values)
             })
             .setDescription(haremDescriptionType({
                 id: harem[page].metadata.id,
