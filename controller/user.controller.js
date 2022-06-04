@@ -139,7 +139,7 @@ const findClaim = async (guild, domain, id) => {
  * @param {String} newUserID ID del usuario a regalar.
  */
 const gift = async (guild, userID, claimID, newUserID) => {
-    let newUser = await getUser(guild, newUserID);
+    let newUser = (await getUser(guild, newUserID)).data;
 
     // user.stats.divorced.count
     // user.stats.received.count
@@ -149,7 +149,7 @@ const gift = async (guild, userID, claimID, newUserID) => {
         "user.id": userID
     }, {
         "user.id": newUser.id,
-        // "user.tags": null
+        // "user.tags": null se borrarán las tags que tenía
     }).then(async () => {
         return status.success("SUCCESS");
     }).catch((error) => {
