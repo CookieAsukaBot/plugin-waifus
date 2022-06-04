@@ -1,24 +1,25 @@
+const status = require('../helpers/status');
 const Guild = require('../models/guild');
 
 /**
- * Comprueba la existencia del servidor, si no se encuentra crea la guild.
+ * Comprueba la existencia del servidor en la DB, si no se encuentra crea.
  * 
  * @param {String} id del servidor.
  * @returns retorna guild model.
  */
 const getGuild = async (id) => {
     try {
-        let guild = await Guild.findOne({id});
+        let guild = await Guild.findOne({ id });
         if (!guild) guild = await new Guild({ id });
-        return guild;
+        return status.success("SUCCESS", guild);
     } catch (error) {
         console.log(error);
-        return false;
+        return status.failed("DB_ERROR");
     };
 };
 
 /**
- * Comproba la existencia del servidor (por seguridad), comprueba la válides de los campos y actualiza los datos.
+ * Comprueba la válides de los campos y actualiza los datos.
  * 
  * @param {String} id del servidor.
  * @param {Object} newData datos nuevos con los valores a modificar.
@@ -38,15 +39,15 @@ const getGuild = async (id) => {
             cooldowns: newData
         });
 
-        return true;
+        return status.success("SUCCESS");
     } catch (error) {
         console.log(error);
-        return false;
+        return status.failed("DB_ERROR");
     };
 };
 
 /**
- * Comproba la existencia del servidor (por seguridad), comprueba la válides de los campos y actualiza los datos.
+ * Comprueba la válides de los campos y actualiza los datos.
  * 
  * @param {String} id del servidor.
  * @param {Object} newData datos nuevos con los valores a modificar.
@@ -65,10 +66,10 @@ const changeLimits = async (id, newData) => {
             limits: newData
         });
 
-        return true;
+        return status.success("SUCCESS");
     } catch (error) {
         console.log(error);
-        return false;
+        return status.failed("DB_ERROR");
     };
 };
 
