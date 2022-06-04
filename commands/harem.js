@@ -9,11 +9,12 @@ const { haremReactionController } = require('../controller/game.controller');
 
 const userHarem = async (message) => {
     let user = message.author;
+
     let hasMention = message.mentions.members.first();
-    if (hasMention) user = hasMention;
+    if (hasMention && !hasMention.user.bot) user = hasMention;
 
     let player = (await getUser(message.guild.id, user.id)).data;
-    let harem = (await getHarem(message.guild.id, user.id, null)).data; // wip: solo muestra el author
+    let harem = (await getHarem(message.guild.id, user.id, null)).data;
 
     return {
         user,
