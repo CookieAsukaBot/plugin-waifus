@@ -11,7 +11,7 @@ const userHarem = async (message) => {
     let user = message.author;
 
     let hasMention = message.mentions.members.first();
-    if (hasMention && !hasMention.user.bot) user = hasMention;
+    if (hasMention && !hasMention.user.bot) user = hasMention.user;
 
     let player = (await getUser(message.guild.id, user.id)).data;
     let harem = (await getHarem(message.guild.id, user.id, null)).data;
@@ -49,7 +49,7 @@ module.exports = {
             .setColor(player.harem.color)
             .setAuthor({
                 name: player.harem.title,
-                iconURL: getAvatarURL(user) // has a bug: if you mention someone it will crash (mention has different values)
+                iconURL: getAvatarURL(user)
             })
             .setDescription(haremDescriptionType({
                 id: harem[page].metadata.id,
