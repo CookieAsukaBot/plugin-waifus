@@ -8,8 +8,8 @@ const {
 const { haremReactionController } = require('../controller/game.controller');
 
 const userHarem = async (message) => {
-    let player = (await getUser(message.guild.id, user.id)).data;
-    let harem = (await getHarem(message.guild.id, user.id, null)).data;
+    let player = (await getUser(message.guild.id, message.author.id)).data;
+    let harem = (await getHarem(message.guild.id, message.author.id, null)).data;
 
     return {
         player,
