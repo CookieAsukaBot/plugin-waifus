@@ -141,16 +141,25 @@ const findClaim = async (guild, domain, id) => {
 const gift = async (guild, userID, claimID, newUserID) => {
     let newUser = (await getUser(guild, newUserID)).data;
 
-    // user.stats.divorced.count
-    // user.stats.received.count
     await Claim.updateOne({
         id: claimID,
         guild,
         "user.id": userID
     }, {
         "user.id": newUser.id,
-        // "user.tags": null se borrarán las tags que tenía
+        "user.tags": [],
+        "user.claimedAt": Date.now()
     }).then(async () => {
+        await User.updateOne({ guild, id: userID }, {
+            $inc: {
+                "stats.gifted.count": 1
+            }
+        });
+        await User.updateOne({ guild, id: newUser.id }, {
+            $inc: {
+                "stats.received.count": 1
+            }
+        });
         return status.success("SUCCESS");
     }).catch((error) => {
         console.error(error);
@@ -169,7 +178,9 @@ const divorce = async (guild, userID, claimID) => {
         guild,
         "user.id": userID,
     }).then(async () => {
-        // "stats.divorced.count": 1
+        await User.updateOne({ guild, id: userID }, {
+            "stats.divorced.count": 1
+        });
         return status.success("SUCCESS");
     }).catch((error) => {
         console.error(error);
