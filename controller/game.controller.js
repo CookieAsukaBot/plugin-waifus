@@ -241,7 +241,7 @@ const haremReactionController = async (data, reactions) => {
         embed.setFooter({
             text: `${page + 1}/${haremSize}`
         })
-        .setTimestamp(harem[page].updatedAt);
+        .setTimestamp(harem[page].user.claimedAt);
 
         msg.edit({
             embeds: [embed]

@@ -18,7 +18,11 @@ const schema = new Schema({
         },
         tags: [{
             type: String
-        }]
+        }],
+        claimedAt: {
+            type: Date,
+            default: Date.now
+        },
     },
     metadata: {
         domain: {
@@ -46,8 +50,10 @@ const schema = new Schema({
             type: String
         }
     }
+    // ,createdAt: { type: Date },
+    // updatedAt: { type: Date },
 }, {
-    timestamps: true
+    timestamps: true // todo: deshabilitarlo al importar reclamaciones del plugin anterior
 });
 
 module.exports = model('waifus_claim', schema);

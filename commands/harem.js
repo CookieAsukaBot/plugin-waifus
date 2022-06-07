@@ -63,7 +63,7 @@ module.exports = {
             .setFooter({
                 text: `${page + 1}/${harem.length}`
             })
-            .setTimestamp(harem[page].updatedAt);
+            .setTimestamp(harem[page].user.claimedAt);
 
         message.channel.send({
             embeds: [embed]
