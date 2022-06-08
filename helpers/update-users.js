@@ -1,68 +1,83 @@
 const moment = require('moment');
-// const Guild = require('../models/guild');
+const Guild = require('../models/guild');
 const User = require('../models/user');
+const { getGuild } = require('../controller/guild.controller');
 
-const settings = {
-    claimReset: 10, // minutos
-    rollsReset: 5,  // minutos
-    rollsPerReset: 7
-};
-
-const resetRolls = async (bot) => {
-    const time = settings.rollsReset * 60 * 1000;
-
-    // Time left
-    // Esto funciona al iniciar el bot.
-    let actualDate = moment();
-    actualDate.add(settings.rollsReset, 'minutes');
-    bot.waifus_cooldown.rolls.timeLeft = actualDate;
+/**
+ * @param {Object} server módelo del guild.
+ * @param {Date} readyAt fecha de cuándo el bot se inició.
+ */
+const resetClaims = (server, readyAt) => {
+    let time = server.cooldowns.claims;
+    readyAt = moment(readyAt);
 
     try {
-        // Esto funciona de manera indefinida
-        setInterval(async () => {
-            await User.updateMany({}, {
-                "fun.rolls": settings.rollsPerReset
-            });
+        setTimeout(async () => {
+            await User.updateMany({ guild: server.id }, { "fun.canClaim": true });
+            await Guild.updateOne({ id: server.id }, { "next.claims": moment().add(server.cooldowns.claims, 'minutes') });
 
-            // Agregar tiempo a waifus_cooldown
-            actualDate.add(settings.rollsReset, 'minutes');
-            bot.waifus_cooldown.rolls.timeLeft = actualDate;
-
-        }, time);
+            setInterval(async () => {
+                await User.updateMany({ guild: server.id }, {
+                    "fun.canClaim": true
+                });
+                await Guild.updateOne({ id: server.id }, {
+                    "next.claims": moment().add(server.cooldowns.claims, 'minutes')
+                });
+            }, time * 60 * 1000);
+        }, readyAt.diff(server.next.claims, 'miliseconds'));
     } catch (error) {
         console.error(error);
     };
 };
 
-const resetClaims = async (bot) => {
-    const time = settings.claimReset * 60 * 1000;
-
-    // Time left
-    let actualDate = moment();
-    actualDate.add(settings.claimReset, 'minutes');
-    bot.waifus_cooldown.claims.timeLeft = actualDate;
+/**
+ * @param {Object} server módelo del guild.
+ * @param {Date} readyAt fecha de cuándo el bot se inició.
+ */
+const resetRolls = (server, readyAt) => {
+    let time = server.cooldowns.rolls;
+    readyAt = moment(readyAt);
 
     try {
-        setInterval(async () => {
-            await User.updateMany({}, {
-                "fun.canClaim": true
-            });
+        setTimeout(async () => {
+            await User.updateMany({ guild: server.id }, { "fun.rolls": server.limits.rolls });
+            await Guild.updateOne({ id: server.id }, { "next.rolls": moment().add(server.cooldowns.rolls, 'minutes') });
 
-            // Agregar tiempo a waifus_cooldown
-            actualDate.add(settings.claimReset, 'minutes');
-            bot.waifus_cooldown.claims.timeLeft = actualDate;
-        }, time);
+            setInterval(async () => {
+                await User.updateMany({ guild: server.id }, {
+                    "fun.rolls": server.limits.rolls
+                });
+                await Guild.updateOne({ id: server.id }, {
+                    "next.rolls": moment().add(server.cooldowns.rolls, 'minutes')
+                });
+            }, time * 60 * 1000);
+        }, readyAt.diff(server.next.rolls, 'miliseconds'));
     } catch (error) {
-        console.error(error)
+        console.error(error);
     };
 };
 
-const updateUsers = async (bot) => {
-    bot.waifus_cooldown.rolls = {};
-    bot.waifus_cooldown.claims = {};
+/**
+ * Detecta las guilds al iniciar el bot e inicia los timers.
+ */
+const loadGuilds = (bot) => {
+    bot.guilds.cache.forEach(async guild => {
+        if (!guild.available) return; // bug: si se cae la guild, no habrá contadores para esa guild al regresar online.
+        let server = await getGuild(guild.id);
 
-    resetRolls(bot);
-    resetClaims(bot);
+        if (server.status == false) return console.log({
+            id: guild.id,
+            status: server.status,
+            message: 'GUILD_DB_ERROR'
+        });
+
+        resetClaims(server.data, bot.readyAt);
+        resetRolls(server.data, bot.readyAt);
+    });
+};
+
+const updateUsers = async (bot) => {
+    loadGuilds(bot);
 };
 
 module.exports = {
