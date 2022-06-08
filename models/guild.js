@@ -15,11 +15,18 @@ const schema = new Schema({
         claims: {
             type: Number,
             default: 10
-        },
-        gifts: {
-            type: Number,
-            default: 10
         }
+    },
+    next: {
+        rolls: {
+            type: Date,
+            default: Date.now
+        },
+        claims: {
+            type: Date,
+            default: Date.now
+        },
+        // cooldowns: // Cambiar la configuración debería de aplicarse con un cooldown de 1 día para evitar abuso
     },
     limits: {
         rolls: {
