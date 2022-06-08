@@ -1,0 +1,23 @@
+{
+    "divorce": {
+        "CONFIRM_MESSAGES": [
+            "¿Estás segura de querer el **divorcio**?",
+            "¿Estás seguro de querer el **divorcio**?",
+            "¿Quieres **divorciarte**?",
+            "¿Aceptas el **divorcio**?"
+        ],
+        "SUCCESS_GIFS": [
+            "https://c.tenor.com/lQBJJmatxPYAAAAC/mission-accomplished-penguins.gif"
+        ]
+    },
+    "gift": {
+        "SUCCESS_GIFS": [
+            "https://c.tenor.com/9VlbkbzetVUAAAAC/present-for-you.gif"
+        ]
+    },
+    "collector": {
+        "toDoubleArrow": 30,
+        "jumpInDouble": 10,
+        "duration": 240
+    }
+}

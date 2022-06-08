@@ -5,6 +5,7 @@ const { getUser, gift, divorce } = require('../controller/user.controller');
 const { fetchUserByID, getAvatarURL } = require('../utils/discord-utils');
 const { getRandomNumber, getRandomArrayItem } = require('../utils/random-things');
 const { haremDescriptionType } = require('../utils/word-things');
+const settings = require('../config.json');
 
 const anilist = require('../api/anilist');
 const booru = require('../api/booru');
@@ -121,13 +122,6 @@ const haremReactionController = async (data, reactions) => {
         page
     } = data;
 
-    // wip: Esta función debería ser más general
-    let settings = {
-        collectorDuration: 240, // (segundos) 4 minutos
-        toDoubleArrow: 30, // Necesita un harem de 30 para agregar flechas dobles
-        jumpInDouble: 10
-    };
-
     let actions = {
         "LEFT": {
             emoji: '⬅',
@@ -139,11 +133,11 @@ const haremReactionController = async (data, reactions) => {
         },
         "DOUBLE_LEFT": {
             emoji: '⏪',
-            requirement: harem.length >= settings.toDoubleArrow
+            requirement: harem.length >= settings.collector.toDoubleArrow
         },
         "DOUBLE_RIGHT": {
             emoji: '⏩',
-            requirement: harem.length >= settings.toDoubleArrow
+            requirement: harem.length >= settings.collector.toDoubleArrow
         },
         "DIVORCE": {
             emoji: '🗑',
@@ -174,7 +168,7 @@ const haremReactionController = async (data, reactions) => {
     // Collector
     let collector = await msg.createReactionCollector({
         filter: (reaction, user) => readReaction(reaction.emoji.name) && user.id !== message.client.user.id,
-        idle: settings.collectorDuration * 1000, // se multiplica por 1 segundo
+        idle: settings.collector.duration * 1000, // se multiplica por 1 segundo
     });
 
     collector.on('collect', async (reaction, user) => {
@@ -188,18 +182,17 @@ const haremReactionController = async (data, reactions) => {
                 if (page > haremSize - 1) page = 0;
                 break;
             case '⏪':
-                page = page - settings.jumpInDouble;
+                page = page - settings.collector.jumpInDouble;
                 if (page <= -1) page = haremSize;
                 break;
             case '⏩':
-                page = page + settings.jumpInDouble;
+                page = page + settings.collector.jumpInDouble;
                 if (page > haremSize) page = 0;
                 break;
             case '🗑':
                 if (user.id === message.author.id) {
                     divorceReactionController({
                         message,
-                        settings, // globalizarlo
                         guild: message.guild.id,
                         userID: message.author.id,
                         claim: harem[page],
@@ -258,22 +251,10 @@ const haremReactionController = async (data, reactions) => {
 const divorceReactionController = (data) => {
     let {
         message,
-        settings,
         guild,
         userID,
         claim
     } = data;
-
-    let messages = [ // todo: seprar esto en un settings/config.json
-        "¿Estás segura de querer el **divorcio**?",
-        "¿Estás seguro de querer el **divorcio**?",
-        "¿Quieres **divorciarte**?",
-        "¿Aceptas el **divorcio**?"
-    ];
-
-    let successGifs = [
-        'https://c.tenor.com/KuqLqBEfs6AAAAAC/huevos-a-huevo.gif',
-    ];
 
     let embed = new MessageEmbed()
         .setColor('GREEN')
@@ -283,19 +264,19 @@ const divorceReactionController = (data) => {
         })
         .setDescription(`Te has divorciado\n${claim.metadata.domain} | ${claim.metadata.id}`)
         .setThumbnail(`${claim.metadata.url}`)
-        .setImage(getRandomArrayItem(successGifs))
+        .setImage(getRandomArrayItem(settings.divorce.SUCCESS_GIFS))
         .setFooter({
             text: `❗ Utiliza ${process.env.BOT_PREFIX}harem para volver a mirar tu lista`
         });
 
-    message.reply(getRandomArrayItem(messages))
+    message.reply(getRandomArrayItem(settings.divorce.CONFIRM_MESSAGES))
         .then(async msg => {
             await msg.react('✅');
             await msg.react('❌');
 
             let collector = await msg.createReactionCollector({
                 filter: (reaction, user) => (reaction.emoji.name === '✅' || reaction.emoji.name === '❌') && user.id === message.author.id,
-                idle: settings.duration * 1000
+                idle: settings.collector.duration * 1000
             });
 
             collector.on('collect', async (reaction) => {
@@ -327,10 +308,6 @@ const giftReactionController = (data) => {
         claim
     } = data;
 
-    let successGifs = [
-        'https://c.tenor.com/9VlbkbzetVUAAAAC/present-for-you.gif',
-    ];
-
     let embed = new MessageEmbed()
         .setColor('PURPLE')
         .setAuthor({
@@ -339,7 +316,7 @@ const giftReactionController = (data) => {
         })
         .setDescription(`Tu regalo se entregó a **${mention.user.username}**\n${claim.metadata.domain} | ${claim.metadata.id}`)
         .setThumbnail(`${claim.metadata.url}`)
-        .setImage(getRandomArrayItem(successGifs))
+        .setImage(getRandomArrayItem(settings.gift.SUCCESS_GIFS))
         .setFooter({
             text: `❗ Utiliza ${process.env.BOT_PREFIX}harem para volver a mirar tu lista`
         });
@@ -351,7 +328,7 @@ const giftReactionController = (data) => {
 
             let collector = await msg.createReactionCollector({
                 filter: (reaction, user) => (reaction.emoji.name === '✅' || reaction.emoji.name === '❌') && user.id !== message.client.user.id,
-                idle: 240 * 1000 // x por 1 segundo
+                idle: settings.collector.duration * 1000
             });
 
             let userConfirmations = [];
