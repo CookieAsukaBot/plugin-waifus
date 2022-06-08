@@ -2,7 +2,7 @@ const moment = require('moment');
 moment.locale('es');
 
 const getCountdownTime = (time) => {
-    const eventTime = time.unix();
+    const eventTime = moment(time).unix();
     const currentTime = moment().unix();
     const diffTime = eventTime - currentTime;
     const duration = moment.duration(diffTime * 1000, 'milliseconds');
