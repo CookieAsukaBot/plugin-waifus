@@ -1,5 +1,6 @@
 const status = require('../helpers/status');
 const Guild = require('../models/guild');
+const { getCountdownTime } = require('../utils/time-things');
 
 /**
  * Comprueba la existencia del servidor en la DB, si no se encuentra crea.
@@ -76,10 +77,29 @@ const changeLimits = async (id, newData) => {
     };
 };
 
+/**
+ * Obtiene el tiempo (de manera leíble) de cuándo serán los siguientes reinicios.
+ * 
+ * @param {String} id del servidor.
+ */
+const getCooldowns = async (id) => {
+    try {
+        let guild = (await getGuild(id)).data;
+        return status.success("SUCCESS", {
+            claims: getCountdownTime(guild.next.claims),
+            rolls: getCountdownTime(guild.next.rolls)
+        });
+    } catch (error) {
+        console.log(error);
+        return status.failed("DB_ERROR");
+    };
+};
+
 // banning
 
 module.exports = {
     getGuild,
     changeCooldowns,
-    changeLimits
+    changeLimits,
+    getCooldowns
 };
