@@ -10,7 +10,10 @@ const Guild = require('../models/guild');
 const getGuild = async (id) => {
     try {
         let guild = await Guild.findOne({ id });
-        if (!guild) guild = await new Guild({ id });
+        if (!guild) {
+            guild = await new Guild({ id });
+            await guild.save();
+        };
         return status.success("SUCCESS", guild);
     } catch (error) {
         console.log(error);
