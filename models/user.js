@@ -10,15 +10,18 @@ const schema = new Schema({
         required: true
     },
     harem: {
-        // waifu: [{
-        //     type: populate
-        // }],
-        // art: [{
-        //     type: populate
-        // }],
+        favourites: [{
+            type: populate
+        }],
         order: {
-            type: String,
-            default: "updatedAt1" // updatedAt significa sorted by, 0/1 desc/asc
+            by: {
+                type: String,
+                default: 'claimedAt' // claimedAt, random
+            },
+            direction: {
+                type: String,
+                default: 'asc' // asc | desc
+            }
         },
         color: {
             type: String,
@@ -28,10 +31,6 @@ const schema = new Schema({
             type: String,
             default: 'Mi harem'
         },
-        count: {
-            type: Number,
-            default: 0
-        }
     },
     fun: {
         canClaim: {
@@ -54,10 +53,10 @@ const schema = new Schema({
     stats: {
         rolls: {
             first: {
-                type: Number
+                type: Date
             },
             last: {
-                type: Number
+                type: Date
             },
             count: {
                 type: Number,
@@ -66,10 +65,10 @@ const schema = new Schema({
         },
         claims: {
             first: {
-                type: Number
+                type: Date
             },
             last: {
-                type: Number
+                type: Date
             },
             count: {
                 type: Number,
@@ -78,10 +77,10 @@ const schema = new Schema({
         },
         gifted: {
             first: {
-                type: Number
+                type: Date
             },
             last: {
-                type: Number
+                type: Date
             },
             count: {
                 type: Number,
@@ -90,10 +89,10 @@ const schema = new Schema({
         },
         received: {
             first: {
-                type: Number
+                type: Date
             },
             last: {
-                type: Number
+                type: Date
             },
             count: {
                 type: Number,
@@ -102,10 +101,10 @@ const schema = new Schema({
         },
         divorced: {
             first: {
-                type: Number
+                type: Date
             },
             last: {
-                type: Number
+                type: Date
             },
             count: {
                 type: Number,
@@ -113,6 +112,8 @@ const schema = new Schema({
             }
         }
     },
+    // createdAt: { type: Date },
+    // updatedAt: { type: Date },
 }, {
     timestamps: true
 });
