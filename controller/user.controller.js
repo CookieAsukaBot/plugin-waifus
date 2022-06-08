@@ -45,6 +45,24 @@ const getHarem = async (guild, userID, order) => {
 };
 
 /**
+ * 
+ * @param {String} guild ID del servidor.
+ * @param {String} userID ID del usuario a encontrar.
+ * @returns {Object} retorna la cantidad de characters y arts.
+ */
+ const getHaremCount = async (guild, userID) => {
+    try {
+        return status.success("SUCCESS", {
+            characters: await Claim.countDocuments({ guild, userID, "metadata.type": "CHARACTER" }),
+            arts: await Claim.countDocuments({ guild, userID, "metadata.type": "ART" })
+        });
+    } catch (error) {
+        console.error(error);
+        return status.failed("DB_ERROR");
+    };
+};
+
+/**
  * Se comprueba la existencia del usuario, después se cambia el estado de reclamación a falso, se crea el módelo a guardar, se comprueban campos extras y guarda el módelo.
  * 
  * @param {String} guild ID del servidor.
@@ -225,6 +243,7 @@ const changeHaremColor = async (guild, userID, newData) => {
 module.exports = {
     getUser,
     getHarem,
+    getHaremCount,
     claim,
     findClaim,
     divorce,
