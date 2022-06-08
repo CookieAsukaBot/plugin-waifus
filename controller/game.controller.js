@@ -2,6 +2,7 @@ const status = require('../helpers/status');
 const User = require('../models/user');
 const { MessageEmbed } = require('discord.js');
 const { getUser, gift, divorce } = require('../controller/user.controller');
+const { getCooldowns } = require('../controller/guild.controller');
 const { fetchUserByID, getAvatarURL } = require('../utils/discord-utils');
 const { getRandomNumber, getRandomArrayItem } = require('../utils/random-things');
 const { haremDescriptionType } = require('../utils/word-things');
@@ -24,8 +25,13 @@ const userCanRoll = async (guild, userID) => {
 
     try {
         let message = "";
-        if (player.fun.rolls < 1) return status.failed(`<@${userID}>, no tienes rolls disponibles!\nEl reinicio es [placeholder].`);
+
+        if (player.fun.rolls < 1) {
+            let cooldowns = (await getCooldowns(guild)).data;
+            return status.failed(`<@${userID}>, no tienes rolls disponibles!\n**El reinicio es ${cooldowns.rolls.replaceAll("*", "")}**.`);
+        };
         if (player.fun.rolls == 3) message = `⚠ quedan **2** rolls ⚠`;
+
         return status.success(message, null);
     } catch (error) {
         console.error(error);
