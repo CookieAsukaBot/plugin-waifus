@@ -11,7 +11,7 @@ const schema = new Schema({
     },
     harem: {
         favourites: [{
-            type: populate
+            type: Schema.ObjectId
         }],
         order: {
             by: {
