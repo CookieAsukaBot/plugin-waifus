@@ -11,6 +11,9 @@ const resetClaims = (server, readyAt) => {
     let time = server.cooldowns.claims;
     readyAt = moment(readyAt);
 
+    let firstRun = moment(server.next.claims).diff(readyAt, 'miliseconds');
+    if (firstRun <= 0) firstRun = 1;
+
     try {
         setTimeout(async () => {
             await User.updateMany({ guild: server.id }, { "fun.canClaim": true });
@@ -24,7 +27,7 @@ const resetClaims = (server, readyAt) => {
                     "next.claims": moment().add(server.cooldowns.claims, 'minutes')
                 });
             }, time * 60 * 1000);
-        }, readyAt.diff(server.next.claims, 'miliseconds'));
+        }, firstRun);
     } catch (error) {
         console.error(error);
     };
@@ -37,6 +40,9 @@ const resetClaims = (server, readyAt) => {
 const resetRolls = (server, readyAt) => {
     let time = server.cooldowns.rolls;
     readyAt = moment(readyAt);
+
+    let firstRun = moment(server.next.rolls).diff(readyAt, 'miliseconds');
+    if (firstRun <= 0) firstRun = 1;
 
     try {
         setTimeout(async () => {
@@ -51,7 +57,7 @@ const resetRolls = (server, readyAt) => {
                     "next.rolls": moment().add(server.cooldowns.rolls, 'minutes')
                 });
             }, time * 60 * 1000);
-        }, readyAt.diff(server.next.rolls, 'miliseconds'));
+        }, firstRun);
     } catch (error) {
         console.error(error);
     };
