@@ -49,9 +49,6 @@ const schema = new Schema({
         media: {
             title: {
                 type: String
-            },
-            format: {
-                type: String // ANIME, MANGA
             }
         }
     }
