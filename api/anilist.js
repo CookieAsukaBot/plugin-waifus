@@ -105,7 +105,10 @@ const getRandomAnilist = async (guild) => {
         let model = {
             domain: "anilist.co",
             id: character.id,
-            anime: character.media.edges[0].node.title.romaji,
+            media: {
+                id: character.media.edges[0].id,
+                title: character.media.edges[0].node.title.romaji
+            },
             name: character.name.full,
             gender: character.gender,
             url: character.image.large,
@@ -115,7 +118,7 @@ const getRandomAnilist = async (guild) => {
         };
 
         model.description += `**${model.name}**`;
-        model.description += `\n${model.anime}`;
+        model.description += `\n${model.media.title}`;
 
         let isClaimed = await findClaim(guild, model.domain, model.id);
         if (isClaimed.message == "FOUND") model.owner = isClaimed.data.user.id;

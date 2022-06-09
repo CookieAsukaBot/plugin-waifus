@@ -47,6 +47,9 @@ const schema = new Schema({
             type: Number // 0 female, 1 male, 2 non-binary
         },
         media: {
+            id: {
+                type: String,
+            },
             title: {
                 type: String
             }

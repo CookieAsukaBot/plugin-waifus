@@ -32,9 +32,9 @@ const formatedClaimType = (claimType, gender, inLowerCase) => {
  * @returns retorna un {String} descripción para el embed
  */
  const haremDescriptionType = data => {
-    let { id, type, domain, name, anime, gender } = data;
+    let { id, type, domain, name, media, gender } = data;
     if (type == "CHARACTER") {
-        return `**${name}**${getGenderEmoji(gender)}\n${anime}`; // agregar género (getGenderEmoji)
+        return `**${name}**${getGenderEmoji(gender)}\n${media}`;
     } else {
         return `${domain} | ${id}`;
     };

@@ -233,7 +233,7 @@ const haremReactionController = async (data, reactions) => {
             type: harem[page].metadata.type,
             domain: harem[page].metadata.domain,
             name: harem[page]?.character.name,
-            anime: harem[page]?.character.anime,
+            media: harem[page]?.character.media.title,
             gender: harem[page]?.character.gender
         }));
         embed.setImage(harem[page].metadata.url);

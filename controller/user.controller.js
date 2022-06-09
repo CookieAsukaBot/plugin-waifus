@@ -71,11 +71,11 @@ const getHarem = async (guild, userID, order) => {
  * @returns retorna un mensaje de éxito.
  */
 const claim = async (guild, userID, data) => {
-    let { anime, name, gender } = data;
+    let { media, name, gender } = data;
 
     try {
         let user = (await getUser(guild, userID)).data;
-        if (user.fun.canClaim == false) return status.failed(`<@${userID}>, ya has reclamado!\nEl reinicio es en [cooldown here].`);
+        if (user.fun.canClaim == false) return status.failed(`<@${userID}>, ya has reclamado!\nEl reinicio es en [cooldown here].`); // todo: agregar cooldown
 
         await User.updateOne({ id: userID }, {
             "fun.canClaim": false,
@@ -99,9 +99,12 @@ const claim = async (guild, userID, data) => {
             }
         });
 
-        if (anime) claimed.character.anime = anime;
+        if (media) {
+            claimed.character.media.id = media.id;
+            claimed.character.media.title = media.title;
+        };
         if (name) claimed.character.name = name;
-        if (gender) { // wip:? Aquí puede que haya personajes en null, y por culpa de ello no tengan género
+        if (gender) {
             switch (gender) {
                 case "Male":
                     claimed.character.gender = 1;
