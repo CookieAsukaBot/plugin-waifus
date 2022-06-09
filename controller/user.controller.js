@@ -2,6 +2,7 @@ const { nanoid } = require('nanoid');
 const status = require('../helpers/status');
 const User = require('../models/user');
 const Claim = require('../models/claim');
+const { getCooldowns } = require('../controller/guild.controller');
 
 /**
  * Comprueba la existencia del usuario, si no se encuentra lo crea.
@@ -75,7 +76,10 @@ const claim = async (guild, userID, data) => {
 
     try {
         let user = (await getUser(guild, userID)).data;
-        if (user.fun.canClaim == false) return status.failed(`<@${userID}>, ya has reclamado!\nEl reinicio es en [cooldown here].`); // todo: agregar cooldown
+        if (user.fun.canClaim == false) {
+            let cooldowns = (await getCooldowns(guild)).data;
+            return status.failed(`<@${userID}>, ya has reclamado!\n**El reinicio es ${cooldowns.claims.replaceAll("*", "")}**.`);
+        };
 
         await User.updateOne({ id: userID }, {
             "fun.canClaim": false,
