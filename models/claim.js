@@ -46,14 +46,17 @@ const schema = new Schema({
         gender: {
             type: Number // 0 female, 1 male, 2 non-binary
         },
-        anime: { // replace with "series" (should includes mangas too)
-            type: String
+        media: {
+            title: {
+                type: String
+            },
+            format: {
+                type: String // ANIME, MANGA
+            }
         }
     }
-    // ,createdAt: { type: Date },
-    // updatedAt: { type: Date },
 }, {
-    timestamps: true // todo: deshabilitarlo al importar reclamaciones del plugin anterior
+    timestamps: true
 });
 
 module.exports = model('waifus_claim', schema);

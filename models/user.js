@@ -111,9 +111,7 @@ const schema = new Schema({
                 default: 0
             }
         }
-    },
-    // createdAt: { type: Date },
-    // updatedAt: { type: Date },
+    }
 }, {
     timestamps: true
 });
