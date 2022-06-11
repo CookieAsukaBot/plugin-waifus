@@ -37,7 +37,7 @@ const getUser = async (guild, userID) => {
 const getHarem = async (guild, userID, order) => {
     try {
         let harem = await Claim.find({ guild, "user.id": userID })
-            // .sort(order || { updatedAt: -1 });
+            .sort({ "user.claimedAt": 1 });
         return status.success("SUCCESS", harem);
     } catch (error) {
         console.error(error);
