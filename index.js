@@ -14,6 +14,7 @@ module.exports = {
 
         // Actualización constante de usuarios
         bot.waifus_cooldown = {};
-        require('./helpers/update-users').updateUsers(bot);
+        require('./helpers/update-users').loadGuilds(bot);
+        require('./events/guildCreate')(bot);
     }
 };

@@ -64,28 +64,36 @@ const resetRolls = (server, readyAt) => {
 };
 
 /**
+ * Inicia los timers para la guild.
+ * 
+ * @param {String} guild desde el bot.
+ * @param {Date} readyAt fecha de cuándo el bot inició.
+ * @returns 
+ */
+const setupGuild = async (guild, readyAt) => {
+    if (!guild.available) return; // bug: si se cae la guild, no habrá contadores para esa guild al regresar online.
+    let server = await getGuild(guild.id);
+
+    if (server.status == false) return console.log({
+        id: guild.id,
+        status: server.status,
+        message: 'GUILD_DB_ERROR'
+    });
+
+    resetClaims(server.data, readyAt);
+    resetRolls(server.data, readyAt);
+};
+
+/**
  * Detecta las guilds al iniciar el bot e inicia los timers.
  */
 const loadGuilds = (bot) => {
     bot.guilds.cache.forEach(async guild => {
-        if (!guild.available) return; // bug: si se cae la guild, no habrá contadores para esa guild al regresar online.
-        let server = await getGuild(guild.id);
-
-        if (server.status == false) return console.log({
-            id: guild.id,
-            status: server.status,
-            message: 'GUILD_DB_ERROR'
-        });
-
-        resetClaims(server.data, bot.readyAt);
-        resetRolls(server.data, bot.readyAt);
+        setupGuild(guild, bot.readyAt);
     });
 };
 
-const updateUsers = async (bot) => {
-    loadGuilds(bot);
-};
-
 module.exports = {
-    updateUsers,
+    loadGuilds,
+    setupGuild
 };
