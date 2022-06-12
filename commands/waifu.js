@@ -38,6 +38,17 @@ const replyWithAlreadyClaimed = async (data) => {
 	});
 };
 
+/**
+ * Muestra el género correctamente en el embed al hacer claim.
+ */
+let claimedMessage = (type, gender) => {
+	if (gender == "Male" || type == "ART") {
+		return "reclamado";
+	} else {
+		return "reclamada";
+	};
+};
+
 module.exports = {
     name: 'waifu',
     category: 'Waifu',
@@ -114,7 +125,7 @@ module.exports = {
 					// Actualizar embed
 					embed.setColor(claimedBy.color);
 					embed.setAuthor({
-						name: `${formatedClaimType(model.type, model.gender)} reclamad${model.gender == 0 || 2 ? "a" : "o" } por ${claimedBy.username}`,
+						name: `${formatedClaimType(model.type, model.gender)} ${claimedMessage(model.type, model.gender)} por ${claimedBy.username}`,
 						iconURL: claimedBy.avatarURL
 					});
 
