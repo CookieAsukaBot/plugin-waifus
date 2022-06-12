@@ -68,17 +68,18 @@ const getHarem = async (guild, userID, order) => {
  * 
  * @param {String} guild ID del servidor.
  * @param {String} userID ID del usuario a encontrar y guardar.
+ * @param {String} username nombre del usuario.
  * @param {Object} data objeto.
  * @returns retorna un mensaje de éxito.
  */
-const claim = async (guild, userID, data) => {
+const claim = async (guild, userID, username, data) => {
     let { media, name, gender } = data;
 
     try {
         let user = (await getUser(guild, userID)).data;
         if (user.fun.canClaim == false) {
             let cooldowns = (await getCooldowns(guild)).data;
-            return status.failed(`<@${userID}>, ya has reclamado!\n**El reinicio es ${cooldowns.claims.replaceAll("*", "")}**.`);
+            return status.failed(`¡**${username}**, ya has reclamado!\n**__El reinicio es ${cooldowns.claims.replaceAll("*", "")}__**.`);
         };
 
         await User.updateOne({ id: userID }, {

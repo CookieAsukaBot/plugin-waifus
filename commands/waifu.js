@@ -28,7 +28,7 @@ const replyWithAlreadyClaimed = async (data) => {
 
 	model.owner = await getClaimOwner(message.channel.guild, bot, model.owner);
 	embed.setAuthor({
-		name: `${formatedClaimType(model.metadata.type, model.gender)} de ${model.owner.username}`,
+		name: `${formatedClaimType(model.type, model.gender)} de ${model.owner.username}`,
 		iconURL: model.owner.avatarURL
 	});
 	embed.setColor(model.owner.color);
@@ -46,8 +46,8 @@ module.exports = {
     cooldown: 1,
     async execute (message, args, bot) {
 		// Comprobar si puede tirar
-		let canRoll = await userCanRoll(message.guild.id, message.author.id);
-		if (canRoll.status == false) return message.reply(canRoll.message);
+		let canRoll = await userCanRoll(message.guild.id, message.author.id, message.author.username);
+		if (canRoll.status == false) return message.channel.send(canRoll.message);
 
 		// Generar roll
 		let model = await getRandomRoll(message.guild.id);
@@ -97,7 +97,7 @@ module.exports = {
 			};
 
 			collector.on('collect', async (reaction, user) => {
-				let tryClaim = await claim(message.guild.id, user.id, model);
+				let tryClaim = await claim(message.guild.id, user.id, user.username, model);
 				if (tryClaim.status == false) {
 					return message.channel.send(tryClaim.message);
 				} else if (tryClaim.status == true) {

@@ -17,8 +17,9 @@ const booru = require('../api/booru');
  * 
  * @param {String} guild ID del servidor.
  * @param {String} userID ID del usuario.
+ * @param {String} username nombre del usuario.
  */
-const userCanRoll = async (guild, userID) => {
+const userCanRoll = async (guild, userID, username) => {
     let player = await getUser(guild, userID);
     if (player.status == false) return status.failed("Ocurrió un error al encontrar tu usuario.");
     player = player.data;
@@ -28,7 +29,7 @@ const userCanRoll = async (guild, userID) => {
 
         if (player.fun.rolls < 1) {
             let cooldowns = (await getCooldowns(guild)).data;
-            return status.failed(`<@${userID}>, no tienes rolls disponibles!\n**El reinicio es ${cooldowns.rolls.replaceAll("*", "")}**.`);
+            return status.failed(`¡**${username}**, no tienes rolls disponibles!\n**__El reinicio es ${cooldowns.rolls.replaceAll("*", "")}__**.`);
         };
         if (player.fun.rolls == 3) message = `⚠ quedan **2** rolls ⚠`;
 
