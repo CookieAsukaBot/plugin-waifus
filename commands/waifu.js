@@ -114,7 +114,7 @@ module.exports = {
 					// Actualizar embed
 					embed.setColor(claimedBy.color);
 					embed.setAuthor({
-						name: `${formatedClaimType(model.type, model.gender)} reclamado por ${claimedBy.username}`,
+						name: `${formatedClaimType(model.type, model.gender)} reclamad${model.gender == 0 || 2 ? "a" : "o" } por ${claimedBy.username}`,
 						iconURL: claimedBy.avatarURL
 					});
 
