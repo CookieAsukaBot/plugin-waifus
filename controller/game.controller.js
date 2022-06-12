@@ -247,7 +247,9 @@ const haremReactionController = async (data, reactions) => {
             embeds: [embed]
         });
     });
-    collector.on('end', async () => await msg.reactions.removeAll()); // bug: if the message is deleted the bot crashes
+    collector.on('end', async () => {try{
+        await msg.reactions.removeAll();
+    }catch(error){}});
 };
 
 /**
