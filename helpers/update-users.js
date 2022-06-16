@@ -1,7 +1,5 @@
 const moment = require('moment');
-const Guild = require('../models/guild');
-const User = require('../models/user');
-const { getGuild } = require('../controller/guild.controller');
+const { getGuild, updateClaims, updateRolls } = require('../controller/guild.controller');
 
 /**
  * @param {Object} server módelo del guild.
@@ -16,18 +14,10 @@ const resetClaims = (server, readyAt) => {
 
     try {
         setTimeout(async () => {
-            await User.updateMany({ guild: server.id }, { "fun.canClaim": true });
-            await Guild.updateOne({ id: server.id }, {
-                "next.claims": moment().add(server.cooldowns.claims, 'minutes').set({ seconds: 0, milliseconds: 0 })
-            });
+            await updateClaims(server);
 
             setInterval(async () => {
-                await User.updateMany({ guild: server.id }, {
-                    "fun.canClaim": true
-                });
-                await Guild.updateOne({ id: server.id }, {
-                    "next.claims": moment().add(server.cooldowns.claims, 'minutes').set({ seconds: 0, milliseconds: 0 })
-                });
+                await updateClaims(server);
             }, time * 60 * 1000);
         }, firstRun);
     } catch (error) {
@@ -48,18 +38,10 @@ const resetRolls = (server, readyAt) => {
 
     try {
         setTimeout(async () => {
-            await User.updateMany({ guild: server.id }, { "fun.rolls": server.limits.rolls });
-            await Guild.updateOne({ id: server.id }, {
-                "next.rolls": moment().add(server.cooldowns.rolls, 'minutes').set({ seconds: 0, milliseconds: 0 })
-            });
+            await updateRolls(server);
 
             setInterval(async () => {
-                await User.updateMany({ guild: server.id }, {
-                    "fun.rolls": server.limits.rolls
-                });
-                await Guild.updateOne({ id: server.id }, {
-                    "next.rolls": moment().add(server.cooldowns.rolls, 'minutes').set({ seconds: 0, milliseconds: 0 })
-                });
+                await updateRolls(server);
             }, time * 60 * 1000);
         }, firstRun);
     } catch (error) {

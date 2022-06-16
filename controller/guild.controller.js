@@ -1,5 +1,7 @@
+const moment = require('moment');
 const status = require('../helpers/status');
 const Guild = require('../models/guild');
+const User = require('../models/user');
 const { getCountdownTime } = require('../utils/time-things');
 
 /**
@@ -95,11 +97,47 @@ const getCooldowns = async (id) => {
     };
 };
 
+/**
+ * Actualiza los claims a base del servidor y asigna el tiempo del siguiente reinicio
+ * 
+ * @param {Object} server 
+ */
+const updateClaims = async (server) => {
+    await User.updateMany({
+        guild: server.id,
+        "fun.canClaim": false
+    },{ "fun.canClaim": true });
+
+    await Guild.updateOne({ id: server.id }, {
+        "next.claims": moment().add(server.cooldowns.claims, 'minutes').set({ seconds: 0, milliseconds: 0 })
+    });
+};
+
+/**
+ * Actualiza los rolls a base del servidor y asigna el tiempo del siguiente reinicio
+ * 
+ * @param {Object} server 
+ */
+const updateRolls = async (server) => {
+    await User.updateMany({
+        guild: server.id,
+        "fun.rolls": { $lt: server.limits.rolls }
+    }, {
+        "fun.rolls": server.limits.rolls
+    });
+
+    await Guild.updateOne({ id: server.id }, {
+        "next.rolls": moment().add(server.cooldowns.rolls, 'minutes').set({ seconds: 0, milliseconds: 0 })
+    });
+};
+
 // banning
 
 module.exports = {
     getGuild,
     changeCooldowns,
     changeLimits,
-    getCooldowns
+    getCooldowns,
+    updateClaims,
+    updateRolls
 };
