@@ -79,7 +79,7 @@ const claim = async (guild, userID, username, data) => {
         let user = (await getUser(guild, userID)).data;
         if (user.fun.canClaim == false) {
             let cooldowns = (await getCooldowns(guild)).data;
-            return status.failed(`¡**${username}**, ya has reclamado!\n**__El reinicio es ${cooldowns.claims.replaceAll("*", "")}__**.`);
+            return status.failed(`¡**${username}**, ya has reclamado!\nEl reinicio es **__${cooldowns.claims.replaceAll("*", "")}__**.`);
         };
 
         await User.updateOne({ id: userID }, {

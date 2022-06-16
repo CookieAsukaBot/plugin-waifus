@@ -29,7 +29,7 @@ const userCanRoll = async (guild, userID, username) => {
 
         if (player.fun.rolls < 1) {
             let cooldowns = (await getCooldowns(guild)).data;
-            return status.failed(`¡**${username}**, no tienes rolls disponibles!\n**__El reinicio es ${cooldowns.rolls.replaceAll("*", "")}__**.`);
+            return status.failed(`¡**${username}**, no tienes rolls disponibles!\nEl reinicio es **__${cooldowns.rolls.replaceAll("*", "")}__**.`);
         };
         if (player.fun.rolls == 3) message = `⚠ quedan **2** rolls ⚠`;
 
