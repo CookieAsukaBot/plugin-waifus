@@ -11,20 +11,22 @@ const resetClaims = (server, readyAt) => {
     let time = server.cooldowns.claims;
     readyAt = moment(readyAt);
 
-    let firstRun = moment(server.next.claims).diff(readyAt, 'miliseconds');
-    if (firstRun <= 0) firstRun = 1;
+    let firstRun = moment(server.next.claims).set({ seconds: 0, milliseconds: 0 }).diff(readyAt, 'miliseconds');
+    if (firstRun < 1) firstRun = 1;
 
     try {
         setTimeout(async () => {
             await User.updateMany({ guild: server.id }, { "fun.canClaim": true });
-            await Guild.updateOne({ id: server.id }, { "next.claims": moment().add(server.cooldowns.claims, 'minutes') });
+            await Guild.updateOne({ id: server.id }, {
+                "next.claims": moment().add(server.cooldowns.claims, 'minutes').set({ seconds: 0, milliseconds: 0 })
+            });
 
             setInterval(async () => {
                 await User.updateMany({ guild: server.id }, {
                     "fun.canClaim": true
                 });
                 await Guild.updateOne({ id: server.id }, {
-                    "next.claims": moment().add(server.cooldowns.claims, 'minutes')
+                    "next.claims": moment().add(server.cooldowns.claims, 'minutes').set({ seconds: 0, milliseconds: 0 })
                 });
             }, time * 60 * 1000);
         }, firstRun);
@@ -41,20 +43,22 @@ const resetRolls = (server, readyAt) => {
     let time = server.cooldowns.rolls;
     readyAt = moment(readyAt);
 
-    let firstRun = moment(server.next.rolls).diff(readyAt, 'miliseconds');
-    if (firstRun <= 0) firstRun = 1;
+    let firstRun = moment(server.next.rolls).set({ seconds: 0, milliseconds: 0 }).diff(readyAt, 'miliseconds');
+    if (firstRun < 1) firstRun = 1;
 
     try {
         setTimeout(async () => {
             await User.updateMany({ guild: server.id }, { "fun.rolls": server.limits.rolls });
-            await Guild.updateOne({ id: server.id }, { "next.rolls": moment().add(server.cooldowns.rolls, 'minutes') });
+            await Guild.updateOne({ id: server.id }, {
+                "next.rolls": moment().add(server.cooldowns.rolls, 'minutes').set({ seconds: 0, milliseconds: 0 })
+            });
 
             setInterval(async () => {
                 await User.updateMany({ guild: server.id }, {
                     "fun.rolls": server.limits.rolls
                 });
                 await Guild.updateOne({ id: server.id }, {
-                    "next.rolls": moment().add(server.cooldowns.rolls, 'minutes')
+                    "next.rolls": moment().add(server.cooldowns.rolls, 'minutes').set({ seconds: 0, milliseconds: 0 })
                 });
             }, time * 60 * 1000);
         }, firstRun);
