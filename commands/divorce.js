@@ -37,7 +37,7 @@ module.exports = {
     cooldown: 3,
     async execute (message, args) {
         let { player, harem } = await userHarem(message);
-        if (harem.length < 1) return message.reply('no hay ninguna waifu reclamada!');
+        if (harem.length < 1) return message.channel.send(`¡**${message.author.username}**, no hay ninguna waifu reclamada!`);
         let page = userInputPosition(parseInt(args), harem.length);
 
         let embed = new MessageEmbed()

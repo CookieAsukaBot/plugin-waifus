@@ -37,12 +37,12 @@ module.exports = {
     cooldown: 3,
     async execute (message, args, bot) {
         let { player, harem } = await userHarem(message);
-        if (harem.length < 1) return message.reply('no hay ninguna waifu reclamada!');
+        if (harem.length < 1) return message.channel.send(`¡**${message.author.username}**, no hay ninguna waifu reclamada!`);
         let page = userInputPosition(parseInt(args), harem.length);
 
         // Comprobar mención
         let mention = message.mentions.members.first();
-        if (!mention || mention.user.bot) return message.reply('menciona a un usuario!'); // todo: mostrar un mensaje más claro
+        if (!mention || mention.user.bot) return message.channel.send(`¡**${message.author.username}**, menciona a un usuario!`); // todo: mostrar un mensaje más claro
 
         let embed = new MessageEmbed()
             .setColor(player.harem.color)
