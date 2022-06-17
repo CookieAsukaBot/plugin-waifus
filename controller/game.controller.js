@@ -280,6 +280,7 @@ const divorceReactionController = (data) => {
 
     message.reply(getRandomArrayItem(settings.divorce.CONFIRM_MESSAGES))
         .then(async msg => {
+            let actionTaken = false;
             await msg.react('✅');
             await msg.react('❌');
 
@@ -293,12 +294,19 @@ const divorceReactionController = (data) => {
                     case '✅':
                         await divorce(guild, userID, claim.id);
                         message.channel.send({ embeds: [embed] });
+                        actionTaken = true;
                         break;
                     case '❌':
                         msg.edit(`~~${msg.content}~~`);
+                        actionTaken = true;
                         await collector.stop();
                         break;
                 };
+            });
+
+            collector.on('end', () => { try {
+                if (!actionTaken) msg.edit(`~~${msg.content}~~\nEl tiempo se agotó.`);
+                } catch (error) {};
             });
         });
 };
@@ -332,6 +340,7 @@ const giftReactionController = (data) => {
     
     message.reply(`¿Quieres **regalar** a ${mention.user.tag}?\nSe requiere de que **ambos confirmen** el regalo.`)
         .then(async msg => {
+            let actionTaken = false;
             await msg.react('✅');
             await msg.react('❌');
 
@@ -350,15 +359,22 @@ const giftReactionController = (data) => {
                         if (userConfirmations.includes(userID) && userConfirmations.includes(mention.id)) {
                             await gift(guild, userID, claim.id, mention.id);
                             message.channel.send({ embeds: [embed] });
+                            actionTaken = true;
                         };
                         break;
                     case '❌':
                         if (userConfirmations.includes(userID) || userConfirmations.includes(mention.id)) {
                             msg.edit(`~~*${msg.content}*~~\n**Cancelaron** el regalo.`);
+                            actionTaken = true;
                             await collector.stop();
                         };
                         break;
                 };
+            });
+
+            collector.on('end', () => { try {
+                if (!actionTaken) msg.edit(`~~${msg.content}~~\nEl tiempo se agotó.`);
+                } catch (error) {};
             });
         });
 
