@@ -1,9 +1,7 @@
 const Booru = require('booru');
 const status = require('../helpers/status');
 const { findClaim } = require('../controller/user.controller');
-
-// Config
-const displayTags = 8;
+const { displayTags } = require('../config.json').apis.booru;
 
 /**
  * Se hace un query con filtros, con el resultado se crea un módelo estándar con los datos que se usarán para el embed.

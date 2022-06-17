@@ -1,4 +1,9 @@
 {
+    "apis": {
+        "booru": {
+            "displayTags": 8
+        }
+    },
     "divorce": {
         "CONFIRM_MESSAGES": [
             "¿Estás segura de querer el **divorcio**?",
