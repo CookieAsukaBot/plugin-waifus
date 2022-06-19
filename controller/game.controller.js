@@ -190,7 +190,7 @@ const haremReactionController = async (data, reactions) => {
                 break;
             case '⏪':
                 page = page - settings.collector.jumpInDouble;
-                if (page <= -1) page = haremSize;
+                if (page <= -1) page = haremSize - 1;
                 break;
             case '⏩':
                 page = page + settings.collector.jumpInDouble;
