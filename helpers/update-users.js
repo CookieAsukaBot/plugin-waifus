@@ -10,7 +10,7 @@ const resetClaims = (server, readyAt) => {
     readyAt = moment(readyAt);
 
     let firstRun = moment(server.next.claims).set({ seconds: 0, milliseconds: 0 }).diff(readyAt, 'miliseconds');
-    if (firstRun < 1) firstRun = 1;
+    if (firstRun < 200) firstRun = 200;
 
     try {
         setTimeout(async () => {
@@ -34,7 +34,7 @@ const resetRolls = (server, readyAt) => {
     readyAt = moment(readyAt);
 
     let firstRun = moment(server.next.rolls).set({ seconds: 0, milliseconds: 0 }).diff(readyAt, 'miliseconds');
-    if (firstRun < 1) firstRun = 1;
+    if (firstRun < 200) firstRun = 200;
 
     try {
         setTimeout(async () => {
