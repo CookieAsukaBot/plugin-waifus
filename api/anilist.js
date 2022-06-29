@@ -125,7 +125,7 @@ const getRandomAnilist = async (guild) => {
 
         return status.success("SUCCESS", model);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return status.failed("API_ERROR");
     };
 };

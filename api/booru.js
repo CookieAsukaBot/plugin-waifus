@@ -4,20 +4,18 @@ const { findClaim } = require('../controller/user.controller');
 const { displayTags } = require('../config.json').apis.booru;
 
 /**
- * Se hace un query con filtros, con el resultado se crea un módelo estándar con los datos que se usarán para el embed.
- * Después se comprueba si un usuario ya había reclamado el arte, si ya ha sido reclamado se agregará el usuario al módelo. Al final se agregan tags y fuentes del arte.
+ * Se hace un query con filtros. Con el resultado se crea un módelo estándar con los datos que se usarán para el embed.
+ * Después se comprueba si un usuario ya había reclamado el arte, si ya ha sido reclamado se agregará el usuario al módelo.
+ * Al final se agregan tags y fuentes del arte.
  * 
  * @param {String} guild se requiere de la ID del servidor para comprobar si un usuario ya ha reclamado el arte.
  * @returns {Object} devuelve un objeto con la información para el embed del arte.
  */
 const getRandomDanbooru = async (guild) => {
     try {
-        let query = {
-            limit: 1,
-            showUnavailable: true
-        };
+        let query = 'rating:sensitive random:1 -video';
 
-        let res = await Booru.search('danbooru', ['rating:safe random:1 -animated'], query);
+        let res = await Booru.search('danbooru', [query], { showUnavailable: true });
         if (res.length != 1) return status.failed("NOT_FOUND");
 
         let model = {
