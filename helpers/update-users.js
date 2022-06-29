@@ -10,7 +10,7 @@ const resetClaims = (server, readyAt) => {
     readyAt = moment(readyAt);
 
     let firstRun = moment(server.next.claims).set({ seconds: 0, milliseconds: 0 }).diff(readyAt, 'miliseconds');
-    if (firstRun < 200) firstRun = 200;
+    if (firstRun < 300) firstRun = 300;
 
     try {
         setTimeout(async () => {
@@ -34,7 +34,7 @@ const resetRolls = (server, readyAt) => {
     readyAt = moment(readyAt);
 
     let firstRun = moment(server.next.rolls).set({ seconds: 0, milliseconds: 0 }).diff(readyAt, 'miliseconds');
-    if (firstRun < 200) firstRun = 200;
+    if (firstRun < 300) firstRun = 300;
 
     try {
         setTimeout(async () => {
@@ -75,7 +75,7 @@ const setupGuild = async (guild, readyAt) => {
  */
 const loadGuilds = (bot) => {
     bot.guilds.cache.forEach(async guild => {
-        setupGuild(guild, bot.readyAt);
+        await setupGuild(guild, bot.readyAt);
     });
 };
 
