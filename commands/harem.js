@@ -1,11 +1,9 @@
-const { MessageEmbed } = require('discord.js');
-const { getAvatarURL } = require('../utils/discord-utils');
-const { haremDescriptionType } = require('../utils/word-things');
-const {
-    getUser,
-    getHarem
-} = require('../controller/user.controller');
-const { haremReactionController } = require('../controller/game.controller');
+const {MessageEmbed} = require('discord.js');
+const {getAvatarURL} = require('../utils/discord-utils');
+const {haremDescriptionType} = require('../utils/word-things');
+const {getUser,getHarem} = require('../controller/user.controller');
+const {haremReactionController} = require('../controller/game.controller');
+const {getRandomIndexObject} = require('../utils/random-things');
 
 const userHarem = async (message) => {
     let user = message.author;
@@ -20,30 +18,33 @@ const userHarem = async (message) => {
         user,
         player,
         harem
-    };
-};
+    }
+}
 
 const userInputPosition = (page, haremSize) => {
     if (!page || isNaN(page) || page <= 0) {
         page = 0;
     } else {
         --page;
-    };
+    }
 
     if (page >= haremSize) page = haremSize - 1;
     return page;
-};
+}
 
 module.exports = {
     name: 'harem', // todo: enviar al dm?
     category: 'Waifu',
     description: 'Muestra tus artes y personajes reclamdos.',
-    usage: '[opcional: página] @mención', // página => posición?
+    usage: '[opcional: página, random] @mención', // página => posición?
     cooldown: 3,
     async execute (message, args, bot) {
         let { user, player, harem } = await userHarem(message);
-        if (harem.length < 1) return message.reply('no hay ninguna waifu reclamada!'); // hacer un tutorial? todo: tutorial o mensaje más claro
+        if (harem.length < 1) return message.channel.send(`¡**${message.author.username}**, no hay ninguna waifu reclamada!`); // hacer un tutorial? todo: tutorial o mensaje más claro
         let page = userInputPosition(parseInt(args), harem.length);
+        let random = false;
+
+        if (args[0]?.toLowerCase() == "random") random = getRandomIndexObject(harem.length);
 
         let embed = new MessageEmbed()
             .setColor(player.harem.color)
@@ -73,8 +74,9 @@ module.exports = {
                 msg,
                 embed,
                 harem,
-                page
+                page,
+                random
             }, ["DOUBLE_LEFT", "LEFT", "RIGHT", "DOUBLE_RIGHT"]);
         });
 	}
-};
+}
