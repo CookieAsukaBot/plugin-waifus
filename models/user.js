@@ -49,6 +49,10 @@ const schema = new Schema({
             type: Number,
             default: 0
         },
+        wishes: {
+            type: Number,
+            default: 3
+        },
     },
     stats: {
         rolls: {
@@ -106,6 +110,12 @@ const schema = new Schema({
             last: {
                 type: Date
             },
+            count: {
+                type: Number,
+                default: 0
+            }
+        },
+        wished: {
             count: {
                 type: Number,
                 default: 0
