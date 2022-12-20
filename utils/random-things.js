@@ -54,9 +54,45 @@ const getRandomHeart = () => {
     return getRandomArrayItem(hearts);
 };
 
+/**
+ * Genera un index aleatorio.
+ * 
+ * @param {Int} size cantidad de números a generar
+ * @returns
+ */
+const getRandomIndexObject = (size) => {
+    let haremSize = size;
+    let randomNumbers = {};
+    let alreadyIn = [];
+
+    // A base del harem
+    for (let index = 0; index < haremSize; index++) {
+        // Se agrega al caché
+        alreadyIn.push(index);
+    };
+
+    // Se hace un shuffle del index
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        };
+    };
+
+    shuffleArray(alreadyIn);
+
+    // Se asigna al index
+    for (let index = 0; index < haremSize; index++) {
+        randomNumbers[index] = alreadyIn[index];
+    };
+
+    return randomNumbers;
+}
+
 module.exports = {
     getRandomNumber,
     getRandomNumbers,
     getRandomArrayItem,
     getRandomHeart,
+    getRandomIndexObject,
 };
