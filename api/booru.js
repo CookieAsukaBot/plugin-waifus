@@ -1,7 +1,23 @@
 const Booru = require('booru');
 const status = require('../helpers/status');
-const { findClaim } = require('../controller/user.controller');
-const { displayTags } = require('../config.json').apis.booru;
+const {findClaim} = require('../controller/user.controller');
+const {displayTags,queryTags} = require('../config.json').apis.booru;
+const {getRandomArrayItem} = require('../utils/random-things');
+
+/**
+ * Obtiene una tag aleatoria desde el config.json complementando random:1
+ * 
+ * @returns {String} query
+ */
+const _getRandomTags = () => {
+    let mainTags = "rating:sensitive random:1 ";
+    let tags = queryTags;
+
+    let getRandomTag = getRandomArrayItem(tags);
+    let query = mainTags + getRandomTag
+
+    return query;
+}
 
 /**
  * Se hace un query con filtros. Con el resultado se crea un módelo estándar con los datos que se usarán para el embed.
@@ -13,7 +29,7 @@ const { displayTags } = require('../config.json').apis.booru;
  */
 const getRandomDanbooru = async (guild) => {
     try {
-        let query = 'rating:sensitive random:1 -video';
+        let query = _getRandomTags();
 
         let res = await Booru.search('danbooru', [query], { showUnavailable: true });
         if (res.length != 1) return status.failed("NOT_FOUND");
@@ -29,7 +45,7 @@ const getRandomDanbooru = async (guild) => {
             createdAt: res.posts[0].createdAt,
             type: "ART",
             owner: false
-        };
+        }
 
         let isClaimed = await findClaim(guild, model.domain, model.id);
         if (isClaimed.message == "FOUND") model.owner = isClaimed.data.user.id;
@@ -41,18 +57,50 @@ const getRandomDanbooru = async (guild) => {
             model.description += model.source.forEach((source, index) =>
                 `\n[Fuente (${index + 1}/${image.source.length})](${source})`
             );
-        };
+        }
         if (!Array.isArray(model.source) && model.source) {
             model.description += `\n[Fuente](${model.source})`;
-        };
+        }
 
         return status.success("SUCCESS", model);
     } catch (error) {
         console.error(error);
         return status.failed("API_ERROR");
-    };
-};
+    }
+}
+
+/**
+ * Encuentra un arte de Danbooru por ID.
+ * 
+ * @param {String} id del arte
+ */
+const getDanbooruByID = async (id) => {
+    try {
+        let harem = [];
+        let query = `id:${id}`;
+
+        let res = await Booru.search('danbooru', [query], { showUnavailable: true });
+        if (res.length != 1) return status.failed("NOT_FOUND");
+
+        let model = {
+            metadata: {
+                id: res.posts[0].id,
+                type: "ART",
+                domain: res.posts[0].booru.domain,
+                url: res.posts[0].fileUrl,
+            }
+        }
+
+        harem.push(model);
+
+        return status.success("SUCCESS", harem);
+    } catch (error) {
+        console.error(error);
+        return status.failed("API_ERROR");
+    }
+}
 
 module.exports = {
-    getRandomDanbooru
-};
+    getRandomDanbooru,
+    getDanbooruByID
+}
