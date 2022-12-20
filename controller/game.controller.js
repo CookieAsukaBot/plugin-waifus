@@ -1,11 +1,12 @@
 const status = require('../helpers/status');
+const {MessageEmbed} = require('discord.js');
 const User = require('../models/user');
-const { MessageEmbed } = require('discord.js');
-const { getUser, gift, divorce } = require('../controller/user.controller');
-const { getCooldowns } = require('../controller/guild.controller');
-const { fetchUserByID, getAvatarURL } = require('../utils/discord-utils');
-const { getRandomNumber, getRandomArrayItem } = require('../utils/random-things');
-const { haremDescriptionType } = require('../utils/word-things');
+const {getUser,gift,divorce} = require('../controller/user.controller');
+const {getCooldowns} = require('../controller/guild.controller');
+const Wish = require('../controller/wish.controller');
+const {fetchUserByID,getAvatarURL} = require('../utils/discord-utils');
+const {getRandomNumber,getRandomArrayItem} = require('../utils/random-things');
+const {haremDescriptionType} = require('../utils/word-things');
 const settings = require('../config.json');
 
 const anilist = require('../api/anilist');
@@ -71,19 +72,17 @@ const userUseRoll = async (guild, userID) => {
  */
 const getRandomRoll = async (guild) => {
     try {
-        let Seed = getRandomNumber(1, 2);
+        let Seed = getRandomNumber(1, 1000);
         let model = null;
+        Seed = 1
 
-        switch (Seed) {
-            case 1:
-                model = await anilist.getRandomAnilist(guild);
-                break;
-            case 2:
-                model = await booru.getRandomDanbooru(guild);
-                break;
-            default:
-                break;
-        };
+        if (Seed >= 1 && Seed <= 5) {
+            model = await Wish.getRandomWish(guild); // 0.5%
+        } else if (Seed >= 6 && Seed <= 151) {
+            model = await anilist.getRandomAnilist(guild); // 15.5%
+        } else if (Seed >= 152) {
+            model = await booru.getRandomDanbooru(guild); // 84%
+        }
 
         // workaround?: si no tiene id retorna un error. el usuario ocupará un feedback ("Ocurrió un error con la API. Vuelve a intentarlo").
         if (!model.data) return status.failed("API_ERROR");
@@ -126,7 +125,8 @@ const haremReactionController = async (data, reactions) => {
         msg,
         embed,
         harem,
-        page
+        page,
+        random
     } = data;
 
     let actions = {
@@ -153,6 +153,18 @@ const haremReactionController = async (data, reactions) => {
         "GIFT": {
             emoji: '🎁',
             requirement: harem.length > 1
+        },
+        "SELECT": {
+            emoji: '❌',
+            requirement: harem.length > 1
+        },
+        "WISH": {
+            emoji: '💌',
+            requirement: harem.length > 0
+        },
+        "WISH_REMOVE": {
+            emoji: '⭕',
+            requirement: harem.length > 0
         },
     };
     let cache = {};
@@ -224,32 +236,79 @@ const haremReactionController = async (data, reactions) => {
                 };
                 break;
             case '❌':
-                // La marca podría funcionar como elegir multiples claims para divorciar/regalar
+                // La marca podría funcionar para elegir multiples claims a divorciar o regalar
+                break;
+            case '💌':
+                // todo: crear un cooldown para evitar el spam de reacciones
+                // Agregar
+                let wish = await Wish.add(
+                    message.guild.id,
+                    user.id,
+                    harem[page]
+                );
+
+                // Responder
+                if (wish.status) {
+                    return message.channel.send(`💌 ¡**${user.username}**, se agregó **${harem[page]?.character?.name ? harem[page]?.character.name : harem[page].metadata.id}** a tu lista de deseos!`);
+                } else {
+                    return message.channel.send(`❗ ¡**${user.username}**, ${wish.message}!`);
+                }
+                break;
+            case '⭕':
+                // todo: necesita un cooldown por el spam de reacciones
+                if (user.id === message.author.id) {
+                    let wishRemove = await Wish.remove(
+                        message.guild.id,
+                        user.id,
+                        harem[page].id,
+                    );
+
+                    if (wishRemove.status) {
+                        return message.channel.send(`⭕ ¡**${message.author.username}**, ${wishRemove.message}!`); // todo: agregar el nombre?
+                    } else {
+                        return message.channel.send(`❗ ¡**${message.author.username}**, ${wishRemove.message}!`);
+                    }
+                } else {
+                    return;
+                }
                 break;
         };
 
-        // Editar embed
-        embed.setDescription(haremDescriptionType({
-            id: harem[page].metadata.id,
-            type: harem[page].metadata.type,
-            domain: harem[page].metadata.domain,
-            name: harem[page]?.character.name,
-            media: harem[page]?.character.media.title,
-            gender: harem[page]?.character.gender
-        }));
-        embed.setImage(harem[page].metadata.url);
-        embed.setFooter({
-            text: `${page + 1}/${haremSize}`
-        })
-        .setTimestamp(harem[page].user.claimedAt);
-
-        msg.edit({
-            embeds: [embed]
+        await msg.edit({
+            embeds: [editControllerEmbed(embed, harem, haremSize, page, random)]
         });
     });
     collector.on('end', async () => {try{
         await msg.reactions.removeAll();
     }catch(error){}});
+};
+
+/**
+ * Edita el embed del mensaje.
+ * 
+ * @param {*} embed 
+ * @param {Object} harem 
+ * @param {Int} page 
+ * @returns retorna el embed editado.
+ */
+const editControllerEmbed = (embed, harem, haremSize, page, random) => {
+    if (random) page = random[page];
+
+    embed.setDescription(haremDescriptionType({
+        id: harem[page].metadata.id,
+        type: harem[page].metadata.type,
+        domain: harem[page].metadata.domain,
+        name: harem[page]?.character.name,
+        media: harem[page]?.character.media.title,
+        gender: harem[page]?.character.gender
+    }));
+    embed.setImage(harem[page].metadata.url);
+    embed.setFooter({
+        text: `${page + 1}/${haremSize}`
+    })
+    embed.setTimestamp(harem[page]?.user?.claimedAt || harem[page]?.createdAt || Date.now);
+
+    return embed;
 };
 
 /**
