@@ -1,7 +1,11 @@
 {
     "apis": {
         "booru": {
-            "displayTags": 8
+            "displayTags": 8,
+            "queryTags": ["-video", "smile"]
+        },
+        "autowaifu": {
+            "cooldown": 3800
         }
     },
     "divorce": {
