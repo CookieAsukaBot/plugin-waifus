@@ -2,10 +2,10 @@ const { nanoid } = require('nanoid');
 const status = require('../helpers/status');
 const User = require('../models/user');
 const Claim = require('../models/claim');
-const { getCooldowns } = require('../controller/guild.controller');
+const {getCooldowns} = require('../controller/guild.controller');
 
 /**
- * Comprueba la existencia del usuario, si no se encuentra lo crea.
+ * Comprueba la existencia del usuario, sino se encuentra lo crea.
  * 
  * @param {String} guild ID del servidor.
  * @param {String} userID ID del usuario a crear.
@@ -16,18 +16,18 @@ const getUser = async (guild, userID) => {
     try {
         let user = await User.findOne(data);
         if (!user) {
-            user = await new User(data);
+            user = new User(data);
             await user.save();
         };
         return status.success("SUCCESS", user);
     } catch (error) {
         console.error(error);
         return status.failed("DB_ERROR");
-    };
-};
+    }
+}
 
 /**
- * Necesita un sistema de orden funcional con desc y asc.
+ * todo: Necesita un sistema de orden funcional con desc y asc.
  * 
  * @param {String} guild ID del servidor.
  * @param {String} userID ID del usuario a encontrar.
@@ -42,10 +42,11 @@ const getHarem = async (guild, userID, order) => {
     } catch (error) {
         console.error(error);
         return status.failed("DB_ERROR");
-    };
-};
+    }
+}
 
 /**
+ * Contador de artes y personajes reclamados del usuario en especifico.
  * 
  * @param {String} guild ID del servidor.
  * @param {String} userID ID del usuario a encontrar.
@@ -60,8 +61,8 @@ const getHarem = async (guild, userID, order) => {
     } catch (error) {
         console.error(error);
         return status.failed("DB_ERROR");
-    };
-};
+    }
+}
 
 /**
  * Se comprueba la existencia del usuario, después se cambia el estado de reclamación a falso, se crea el módelo a guardar, se comprueban campos extras y guarda el módelo.
@@ -212,7 +213,7 @@ const divorce = async (guild, userID, claimID) => {
         console.error(error);
         return status.failed("DB_ERROR");
     });
-};
+}
 
 /**
  * @param {String} guild ID del servidor.
@@ -228,8 +229,8 @@ const changeHaremTitle = async (guild, userID, newData) => {
     } catch (error) {
         console.error(error);
         return status.failed("DB_ERROR");
-    };
-};
+    }
+}
 
 /**
  * @param {String} guild ID del servidor.
@@ -245,8 +246,8 @@ const changeHaremColor = async (guild, userID, newData) => {
     } catch (error) {
         console.error(error);
         return status.failed("DB_ERROR");
-    };
-};
+    }
+}
 
 module.exports = {
     getUser,
@@ -257,5 +258,5 @@ module.exports = {
     divorce,
     gift,
     changeHaremTitle,
-    changeHaremColor
-};
+    changeHaremColor,
+}
