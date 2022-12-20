@@ -16,8 +16,27 @@ const getCountdownTime = (time) => {
     if (duration.minutes() <= 0 && duration.seconds() <= 0) timeLeft = `**ahora mismo**`;
 
     return timeLeft.trim();
-};
+}
+
+/**
+ * 
+ * @param {Int} seconds segundos en el futuro.
+ * @returns {String} tiempo.
+ */
+const getCountdownInSeconds = (seconds) => {
+    return moment().add(seconds, 'seconds').unix();
+}
+
+/**
+ * Se usa para controlar el tiempo de cada loop.
+ * 
+ * @param {Int} ms 
+ * @returns 
+ */
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 module.exports = {
-    getCountdownTime
-};
+    getCountdownTime,
+    getCountdownInSeconds,
+    delay,
+}
