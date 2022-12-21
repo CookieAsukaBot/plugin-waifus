@@ -108,7 +108,7 @@ module.exports = {
     
                 // Comprobar si tiene dueño
                 if (model.owner !== false) {
-                    return await replyWithAlreadyClaimed({
+                    await replyWithAlreadyClaimed({
                         embed,
                         model,
                         message,
@@ -120,72 +120,71 @@ module.exports = {
                         name: `Random ${formatedClaimType(model.type, model.gender, true)} para ${message.author.username} (${times + 1}/${rolls})`,
                         iconURL: getAvatarURL(message.author)
                     });
-                }
+                    // Comprobar si es un deseo
+                    // todo: probablemente esta comprobación iría mejor en una función
+                    let sendContentMessage = {}
+                    if (model.wish) {
+                        warning = "🎁 Apareció un **deseo** para: ";
+                        model.wish.ids.forEach(ping =>
+                            warning += `<@${ping}> `);
     
-                // Comprobar si es un deseo
-                // todo: probablemente esta comprobación iría mejor en una función
-                let sendContentMessage = {}
-                if (model.wish) {
-                    warning = "🎁 Apareció un **deseo** para: ";
-                    model.wish.ids.forEach(ping =>
-                        warning += `<@${ping}> `);
-
-                    warning.trim();
-
-                    sendContentMessage = {
-                        content: warning,
-                        embeds: [embed]
-                    }
-                } else {
-                    sendContentMessage = {
-                        embeds: [embed]
-                    }
-                }
+                        warning.trim();
     
-                // Reacción + reclamación
-                message.channel.send(sendContentMessage).then(async msg => {
-                    await msg.react(getRandomHeart()); // todo: random heart (opcional)
-    
-                    let collector = await msg.createReactionCollector({
-                        filter: (reaction, user) => user.id !== message.client.user.id,
-                        time: 80 * 1000, // todo: tiempo a base de la configuración del servidor
-                    });
-    
-                    collector.status = {
-                        claimed: false,
-                        user: null
-                    }
-    
-                    collector.on('collect', async (reaction, user) => {
-                        let tryClaim = await claim(message.guild.id, user.id, user.username, model);
-                        if (tryClaim.status == false) {
-                            return message.channel.send(tryClaim.message);
-                        } else if (tryClaim.status == true) {
-                            collector.status.claimed = true;
-                            collector.status.user = user;
-                            await collector.stop();
+                        sendContentMessage = {
+                            content: warning,
+                            embeds: [embed]
                         }
-                    });
-    
-                    collector.on('end', async collected => {
-                        if (collector.status.claimed == true) {
-                            let claimedBy = await getClaimOwner(message.guild.id, bot, collector.status.user.id);
-    
-                            // Actualizar embed
-                            embed.setColor(claimedBy.color);
-                            embed.setAuthor({
-                                name: `${formatedClaimType(model.type, model.gender)} ${claimedMessage(model.type, model.gender)} por ${claimedBy.username}`,
-                                iconURL: claimedBy.avatarURL
-                            });
-                            embed.setDescription(model.description.toString());
-    
-                            await msg.edit({ embeds: [embed] });
-                            await msg.reply({
-                                content: `💖 ¡**${claimedBy.username}** reclamó su ${formatedClaimType(model.type, model.gender)}! 💖` // todo: ¿mensaje personalizable por el usuario?
-                            });
+                    } else {
+                        sendContentMessage = {
+                            embeds: [embed]
                         }
+                    }
+        
+                    // Reacción + reclamación
+                    message.channel.send(sendContentMessage).then(async msg => {
+                        await msg.react(getRandomHeart()); // todo: random heart (opcional)
+        
+                        let collector = await msg.createReactionCollector({
+                            filter: (reaction, user) => user.id !== message.client.user.id,
+                            time: 80 * 1000, // todo: tiempo a base de la configuración del servidor
+                        });
+        
+                        collector.status = {
+                            claimed: false,
+                            user: null
+                        }
+        
+                        collector.on('collect', async (reaction, user) => {
+                            let tryClaim = await claim(message.guild.id, user.id, user.username, model);
+                            if (tryClaim.status == false) {
+                                return message.channel.send(tryClaim.message);
+                            } else if (tryClaim.status == true) {
+                                collector.status.claimed = true;
+                                collector.status.user = user;
+                                await collector.stop();
+                            }
+                        });
+        
+                        collector.on('end', async collected => {
+                            if (collector.status.claimed == true) {
+                                let claimedBy = await getClaimOwner(message.guild.id, bot, collector.status.user.id);
+        
+                                // Actualizar embed
+                                embed.setColor(claimedBy.color);
+                                embed.setAuthor({
+                                    name: `${formatedClaimType(model.type, model.gender)} ${claimedMessage(model.type, model.gender)} por ${claimedBy.username}`,
+                                    iconURL: claimedBy.avatarURL
+                                });
+                                embed.setDescription(model.description.toString());
+        
+                                await msg.edit({ embeds: [embed] });
+                                await msg.reply({
+                                    content: `💖 ¡**${claimedBy.username}** reclamó su ${formatedClaimType(model.type, model.gender)}! 💖` // todo: ¿mensaje personalizable por el usuario?
+                                });
+                            }
+                        });
                     });
-                });
+                }
             }
 
             // Por cada ciclo esperar (ms)
