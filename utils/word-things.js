@@ -20,11 +20,11 @@ const formatedClaimType = (claimType, gender, inLowerCase) => {
             default:
                 output = "Waifu";
                 break;
-        };
-    };
+        }
+    }
     if (inLowerCase) output = output.toLowerCase();
     return output;
-};
+}
 
 /**
  * work in progress (no debería de pedir tantos datos?)
@@ -33,12 +33,13 @@ const formatedClaimType = (claimType, gender, inLowerCase) => {
  */
  const haremDescriptionType = data => {
     let { id, type, domain, name, media, gender } = data;
+    // for the future: switch?case
     if (type == "CHARACTER") {
         return `**${name}**${getGenderEmoji(gender)}\n${media}`;
     } else {
         return `${domain} | ${id}`;
-    };
-};
+    }
+}
 
 /**
  * Retorna emoji a base del género
@@ -56,12 +57,12 @@ const getGenderEmoji = (gender) => {
         default:
             output = " ♀️";
             break;
-    };
+    }
     return output;
-};
+}
 
 module.exports = {
     formatedClaimType,
     haremDescriptionType,
     getGenderEmoji,
-};
+}

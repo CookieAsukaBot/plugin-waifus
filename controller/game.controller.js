@@ -76,10 +76,10 @@ const getRandomRoll = async (guild) => {
         let model = null;
         Seed = 1
 
-        if (Seed >= 1 && Seed <= 5) {
-            model = await Wish.getRandomWish(guild); // 0.5%
-        } else if (Seed >= 6 && Seed <= 151) {
-            model = await anilist.getRandomAnilist(guild); // 15.5%
+        if (Seed >= 1 && Seed <= 4) {
+            model = await Wish.getRandomWish(guild); // 0.4%
+        } else if (Seed >= 5 && Seed <= 151) {
+            model = await anilist.getRandomAnilist(guild); // 15.6%
         } else if (Seed >= 152) {
             model = await booru.getRandomDanbooru(guild); // 84%
         }

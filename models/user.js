@@ -53,6 +53,9 @@ const schema = new Schema({
             type: Number,
             default: 3
         },
+        // titles: [{
+        //     type: Schema.ObjectId
+        // }]
     },
     stats: {
         rolls: {

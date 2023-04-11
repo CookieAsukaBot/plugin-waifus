@@ -1,5 +1,5 @@
 const moment = require('moment');
-const { getGuild, updateClaims, updateRolls } = require('../controller/guild.controller');
+const {getGuild,updateClaims,updateRolls} = require('../controller/guild.controller');
 
 /**
  * @param {Object} server módelo del guild.
@@ -22,14 +22,14 @@ const resetClaims = (server, readyAt) => {
         }, firstRun);
     } catch (error) {
         console.error(error);
-    };
-};
+    }
+}
 
 /**
  * @param {Object} server módelo del guild.
  * @param {Date} readyAt fecha de cuándo el bot se inició.
  */
-const resetRolls = (server, readyAt) => {
+const resetRolls = (server, readyAt, timers) => {
     let time = server.cooldowns.rolls;
     readyAt = moment(readyAt);
 
@@ -46,8 +46,8 @@ const resetRolls = (server, readyAt) => {
         }, firstRun);
     } catch (error) {
         console.error(error);
-    };
-};
+    }
+}
 
 /**
  * Inicia los timers para la guild.
@@ -57,7 +57,10 @@ const resetRolls = (server, readyAt) => {
  * @returns 
  */
 const setupGuild = async (guild, readyAt) => {
-    if (!guild.available) return; // bug: si se cae la guild, no habrá contadores para esa guild al regresar online.
+    /**
+     * bug: si se cae la guild, no habrá contadores para esa guild al regresar online.
+     */
+    if (!guild.available) return;
     let server = await getGuild(guild.id);
 
     if (server.status == false) return console.log({
@@ -68,18 +71,20 @@ const setupGuild = async (guild, readyAt) => {
 
     resetClaims(server.data, readyAt);
     resetRolls(server.data, readyAt);
-};
+}
 
 /**
  * Detecta las guilds al iniciar el bot e inicia los timers.
  */
 const loadGuilds = (bot) => {
-    bot.guilds.cache.forEach(async guild => {
-        await setupGuild(guild, bot.readyAt);
-    });
-};
+    setTimeout(() => {
+        bot.guilds.cache.forEach(async guild => {
+            await setupGuild(guild, bot.readyAt);
+        });
+    }, 1200);
+}
 
 module.exports = {
     loadGuilds,
     setupGuild
-};
+}
