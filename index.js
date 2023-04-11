@@ -2,7 +2,7 @@ const path = require('node:path');
 
 module.exports = {
     name: 'Waifus',
-    version: '0.2.0',
+    version: '0.2.1',
     cookiebot: '1.2.1',
     description: '¡Reclama y/o intercambia personajes & artes!',
     dependencies: ['booru', 'nanoid'],

@@ -74,7 +74,6 @@ const getRandomRoll = async (guild) => {
     try {
         let Seed = getRandomNumber(1, 1000);
         let model = null;
-        Seed = 1
 
         if (Seed >= 1 && Seed <= 4) {
             model = await Wish.getRandomWish(guild); // 0.4%
