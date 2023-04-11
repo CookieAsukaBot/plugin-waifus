@@ -25,6 +25,7 @@ module.exports = {
         }
 
         let harem = characters.data;
+        console.log({harem});
 
         let embed = new EmbedBuilder()
             .setColor(process.env.BOT_COLOR)
@@ -43,8 +44,7 @@ module.exports = {
             .setImage(harem[page].metadata.url)
             .setFooter({
                 text: `${page + 1}/${harem.length}`
-            })
-            .setTimestamp(Date.now);
+            });
 
         message.channel.send({
             embeds: [embed]
