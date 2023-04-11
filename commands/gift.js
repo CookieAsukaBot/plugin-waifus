@@ -1,11 +1,11 @@
-const { MessageEmbed } = require('discord.js');
-const { getAvatarURL } = require('../utils/discord-utils');
-const { haremDescriptionType } = require('../utils/word-things');
+const {EmbedBuilder} = require('discord.js');
+const {getAvatarURL} = require('../utils/discord-utils');
+const {haremDescriptionType} = require('../utils/word-things');
 const {
     getUser,
     getHarem
 } = require('../controller/user.controller');
-const { haremReactionController } = require('../controller/game.controller');
+const {haremReactionController} = require('../controller/game.controller');
 
 const userHarem = async (message) => {
     let player = (await getUser(message.guild.id, message.author.id)).data;
@@ -44,7 +44,7 @@ module.exports = {
         let mention = message.mentions.members.first();
         if (!mention || mention.user.bot) return message.channel.send(`¡**${message.author.username}**, menciona a un usuario!`); // todo: mostrar un mensaje más claro
 
-        let embed = new MessageEmbed()
+        let embed = new EmbedBuilder()
             .setColor(player.harem.color)
             .setAuthor({
                 name: player.harem.title,

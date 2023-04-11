@@ -1,5 +1,5 @@
 const status = require('../helpers/status');
-const {MessageEmbed} = require('discord.js');
+const {EmbedBuilder} = require('discord.js');
 const User = require('../models/user');
 const {getUser,gift,divorce} = require('../controller/user.controller');
 const {getCooldowns} = require('../controller/guild.controller');
@@ -323,7 +323,7 @@ const divorceReactionController = (data) => {
         claim
     } = data;
 
-    let embed = new MessageEmbed()
+    let embed = new EmbedBuilder()
         .setColor('GREEN')
         .setAuthor({
             name: `Felicidades, ${message.author.username}`,
@@ -383,7 +383,7 @@ const giftReactionController = (data) => {
         claim
     } = data;
 
-    let embed = new MessageEmbed()
+    let embed = new EmbedBuilder()
         .setColor('PURPLE')
         .setAuthor({
             name: `Has regalado, ${message.author.username}`,

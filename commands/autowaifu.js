@@ -1,4 +1,4 @@
-const {MessageEmbed} = require('discord.js');
+const {EmbedBuilder} = require('discord.js');
 const {getAvatarURL} = require('../utils/discord-utils');
 const {getRandomHeart} = require('../utils/random-things');
 const {formatedClaimType} = require('../utils/word-things');
@@ -99,7 +99,7 @@ module.exports = {
     
                 if (canRoll.message.length > 0) model.description = `${model.description}\n\n${canRoll.message}`;
     
-                let embed = new MessageEmbed()
+                let embed = new EmbedBuilder()
                     .setDescription(model.description.toString() + `\nVence: <t:${getCountdownInSeconds(80)}:R>`)
                     .setImage(model.url)
                     .setFooter({

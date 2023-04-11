@@ -1,7 +1,7 @@
-const { MessageEmbed } = require('discord.js');
-const { getAvatarURL } = require('../utils/discord-utils');
-const { getUser, getHaremCount } = require('../controller/user.controller');
-const { getCooldowns } = require('../controller/guild.controller');
+const {EmbedBuilder} = require('discord.js');
+const {getAvatarURL} = require('../utils/discord-utils');
+const {getUser,getHaremCount} = require('../controller/user.controller');
+const {getCooldowns} = require('../controller/guild.controller');
 
 const userInfo = (player) => {
     let canClaim = player.fun.canClaim ? `Puedes reclamar: **Sí** ✅` : `Puedes reclamar: **No** ❌`;
@@ -30,7 +30,7 @@ module.exports = {
 
         let msg = `${userInfo(player)}\n\n${haremInfo(harem)}\n\n${guildInfo(cooldowns)}`;
 
-        let embed = new MessageEmbed()
+        let embed = new EmbedBuilder()
             .setColor(player.harem.color)
             .setAuthor({
                 name: `Estado de ${message.author.username}`,

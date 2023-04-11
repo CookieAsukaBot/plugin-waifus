@@ -1,4 +1,4 @@
-const {MessageEmbed} = require('discord.js');
+const {EmbedBuilder} = require('discord.js');
 const {getAvatarURL} = require('../utils/discord-utils');
 const {getUser} = require('../controller/user.controller');
 const {find} = require('../controller/wish.controller');
@@ -23,7 +23,7 @@ module.exports = {
         let player = (await getUser(message.guild.id, message.author.id)).data;
         harem = harem.data;
 
-        let embed = new MessageEmbed()
+        let embed = new EmbedBuilder()
             .setColor(player.harem.color)
             .setAuthor({
                 name: `Lista de deseos de ${message.author.username}`,

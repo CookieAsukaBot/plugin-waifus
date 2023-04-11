@@ -1,4 +1,4 @@
-const {MessageEmbed} = require('discord.js');
+const {EmbedBuilder} = require('discord.js');
 const {getAvatarURL} = require('../utils/discord-utils');
 const {haremDescriptionType} = require('../utils/word-things');
 const {getUser,getHarem} = require('../controller/user.controller');
@@ -46,7 +46,7 @@ module.exports = {
 
         if (args[0]?.toLowerCase() == "random") random = getRandomIndexObject(harem.length);
 
-        let embed = new MessageEmbed()
+        let embed = new EmbedBuilder()
             .setColor(player.harem.color)
             .setAuthor({
                 name: player.harem.title,

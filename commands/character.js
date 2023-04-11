@@ -1,4 +1,4 @@
-const {MessageEmbed} = require('discord.js');
+const {EmbedBuilder} = require('discord.js');
 const {getAvatarURL} = require('../utils/discord-utils');
 const {haremDescriptionType} = require('../utils/word-things');
 const {getCharacter} = require('../api/anilist');
@@ -26,7 +26,7 @@ module.exports = {
 
         let harem = characters.data;
 
-        let embed = new MessageEmbed()
+        let embed = new EmbedBuilder()
             .setColor(process.env.BOT_COLOR)
             .setAuthor({
                 name: `Búsqueda: ${search}`,
