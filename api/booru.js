@@ -10,7 +10,7 @@ const {getRandomArrayItem} = require('../utils/random-things');
  * @returns {String} query
  */
 const _getRandomTags = () => {
-    let mainTags = "rating:sensitive random:1 ";
+    let mainTags = "random:1 ";
     let tags = queryTags;
 
     let getRandomTag = getRandomArrayItem(tags);
