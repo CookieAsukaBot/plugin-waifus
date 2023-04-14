@@ -40,8 +40,7 @@ module.exports = {
             .setImage(harem[page].metadata.url)
             .setFooter({
                 text: `${page + 1}/${harem.length}`
-            })
-            .setTimestamp(Date.now);
+            });
 
         message.channel.send({
             embeds: [embed]
