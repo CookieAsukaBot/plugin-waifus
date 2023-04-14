@@ -2,7 +2,7 @@ const path = require('node:path');
 
 module.exports = {
     name: 'Waifus',
-    version: '0.3.0',
+    version: '0.3.1',
     cookiebot: '1.4.0',
     description: '¡Reclama y/o intercambia personajes & artes!',
     dependencies: ['booru', 'nanoid'],
@@ -10,7 +10,7 @@ module.exports = {
     async plugin (bot) {
         // Cargar comandos
         require('../../events/commands')(bot, path.join(__dirname, 'commands'));
-        require('../../events/commands')(bot, path.join(__dirname, 'slash-commands'), true);
+        // require('../../events/commands')(bot, path.join(__dirname, 'slash-commands'), true);
 
         // Actualización constante de usuarios
         bot.waifus_cooldown = {};
