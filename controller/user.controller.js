@@ -55,8 +55,8 @@ const getHarem = async (guild, userID, order) => {
  const getHaremCount = async (guild, userID) => {
     try {
         return status.success("SUCCESS", {
-            characters: await Claim.countDocuments({ guild, userID, "metadata.type": "CHARACTER" }),
-            arts: await Claim.countDocuments({ guild, userID, "metadata.type": "ART" })
+            characters: await Claim.countDocuments({ guild, "user.id": userID, "metadata.type": "CHARACTER" }),
+            arts: await Claim.countDocuments({ guild, "user.id": userID, "metadata.type": "ART" })
         });
     } catch (error) {
         console.error(error);

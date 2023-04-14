@@ -30,7 +30,7 @@ const userCanRoll = async (guild, userID, username) => {
 
         if (player.fun.rolls < 1) {
             let cooldowns = (await getCooldowns(guild)).data;
-            return status.failed(`¡**${username}**, no tienes rolls disponibles!\nEl reinicio es **__${cooldowns.rolls.replaceAll("*", "")}__**.`);
+            return status.failed(`¡**${username}**, no tienes rolls disponibles! ❗\nEl reinicio es **__${cooldowns.rolls.replaceAll("*", "")}__**.`);
         };
         if (player.fun.rolls == 3) message = `⚠ quedan **2** rolls ⚠`;
 
@@ -324,7 +324,7 @@ const divorceReactionController = (data) => {
     } = data;
 
     let embed = new EmbedBuilder()
-        .setColor('GREEN')
+        .setColor('Green')
         .setAuthor({
             name: `Felicidades, ${message.author.username}`,
             iconURL: message.author.displayAvatarURL({ dynamic: true })
@@ -384,7 +384,7 @@ const giftReactionController = (data) => {
     } = data;
 
     let embed = new EmbedBuilder()
-        .setColor('PURPLE')
+        .setColor('Purple')
         .setAuthor({
             name: `Has regalado, ${message.author.username}`,
             iconURL: message.author.displayAvatarURL({ dynamic: true })
