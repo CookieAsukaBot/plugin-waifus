@@ -395,8 +395,8 @@ const giftReactionController = (data) => {
         .setFooter({
             text: `❗ Utiliza ${process.env.BOT_PREFIX}harem para volver a mirar tu lista`
         });
-    
-    message.reply(`¿Quieres **regalar** a ${mention.user.tag}?\nSe requiere de que **ambos confirmen** el regalo.`)
+
+    message.reply(`¿Quieres **regalar** a ${mention.user.username}?\nSe requiere de que **ambos confirmen** el regalo.`)
         .then(async msg => {
             let actionTaken = false;
             await msg.react('✅');
