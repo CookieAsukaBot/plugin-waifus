@@ -40,7 +40,7 @@ module.exports = {
     cooldown: 3,
     async execute (message, args, bot) {
         let { user, player, harem } = await userHarem(message);
-        if (harem.length < 1) return message.channel.send(`¡**${message.author.username}**, no hay ninguna waifu reclamada!`); // hacer un tutorial? todo: tutorial o mensaje más claro
+        if (harem.length < 1) return message.channel.send(`¡**${message.author.globalName}**, no hay ninguna waifu reclamada!`); // hacer un tutorial? todo: tutorial o mensaje más claro
         let page = userInputPosition(parseInt(args), harem.length);
         let random = false;
 

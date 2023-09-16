@@ -106,7 +106,7 @@ const getClaimOwner = async (guild, bot, id) => {
     let user = await fetchUserByID(bot, id);
     let avatar = getAvatarURL(user);
     return {
-        username: user.username,
+        username: user.globalName,
         avatarURL: avatar,
         color: player.harem.color
     };
@@ -248,9 +248,9 @@ const haremReactionController = async (data, reactions) => {
 
                 // Responder
                 if (wish.status) {
-                    return message.channel.send(`💌 ¡**${user.username}**, se agregó **${harem[page]?.character?.name ? harem[page]?.character.name : harem[page].metadata.id}** a tu lista de deseos!`);
+                    return message.channel.send(`💌 ¡**${user.globalName}**, se agregó **${harem[page]?.character?.name ? harem[page]?.character.name : harem[page].metadata.id}** a tu lista de deseos!`);
                 } else {
-                    return message.channel.send(`❗ ¡**${user.username}**, ${wish.message}!`);
+                    return message.channel.send(`❗ ¡**${user.globalName}**, ${wish.message}!`);
                 }
                 break;
             case '⭕':
@@ -263,9 +263,9 @@ const haremReactionController = async (data, reactions) => {
                     );
 
                     if (wishRemove.status) {
-                        return message.channel.send(`⭕ ¡**${message.author.username}**, ${wishRemove.message}!`); // todo: agregar el nombre?
+                        return message.channel.send(`⭕ ¡**${message.author.globalName}**, ${wishRemove.message}!`); // todo: agregar el nombre?
                     } else {
-                        return message.channel.send(`❗ ¡**${message.author.username}**, ${wishRemove.message}!`);
+                        return message.channel.send(`❗ ¡**${message.author.globalName}**, ${wishRemove.message}!`);
                     }
                 } else {
                     return;
@@ -326,7 +326,7 @@ const divorceReactionController = (data) => {
     let embed = new EmbedBuilder()
         .setColor('Green')
         .setAuthor({
-            name: `Felicidades, ${message.author.username}`,
+            name: `Felicidades, ${message.author.globalName}`,
             iconURL: message.author.displayAvatarURL({ dynamic: true })
         })
         .setDescription(`Te has divorciado\n${claim.metadata.domain} | ${claim.metadata.id}`)
@@ -386,10 +386,10 @@ const giftReactionController = (data) => {
     let embed = new EmbedBuilder()
         .setColor('Purple')
         .setAuthor({
-            name: `Has regalado, ${message.author.username}`,
+            name: `Has regalado, ${message.author.globalName}`,
             iconURL: message.author.displayAvatarURL({ dynamic: true })
         })
-        .setDescription(`Tu regalo se entregó a **${mention.user.username}**\n${claim.metadata.domain} | ${claim.metadata.id}`)
+        .setDescription(`Tu regalo se entregó a **${mention.user.globalName}**\n${claim.metadata.domain} | ${claim.metadata.id}`)
         .setThumbnail(`${claim.metadata.url}`)
         .setImage(getRandomArrayItem(settings.gift.SUCCESS_GIFS))
         .setFooter({

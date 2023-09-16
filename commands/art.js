@@ -13,15 +13,15 @@ module.exports = {
     cooldown: 5,
     async execute (message, args) {
         let page = 0;
-        if (!args) return message.channel.send(`¡${message.author.username}, obten ayuda sobre el comando escribiendo \`${process.env.prefix}help ${this.name}\`!`);
+        if (!args) return message.channel.send(`¡${message.author.globalName}, obten ayuda sobre el comando escribiendo \`${process.env.prefix}help ${this.name}\`!`);
 
         let search = args.join(" ");
-        if (search.length <= 0) return message.channel.send(`¡**${message.author.username}**, se requiere de __al menos 1 caracter__ para realizar una búsqueda!`);
-        if (search.length > 10) return message.channel.send(`¡**${message.author.username}**, sobrepasaste el __límite de caracteres__ (utiliza de 1 a 10)!`);
+        if (search.length <= 0) return message.channel.send(`¡**${message.author.globalName}**, se requiere de __al menos 1 caracter__ para realizar una búsqueda!`);
+        if (search.length > 10) return message.channel.send(`¡**${message.author.globalName}**, sobrepasaste el __límite de caracteres__ (utiliza de 1 a 10)!`);
 
         let art = await getDanbooruByID(search.trim());
         if (art.status == false) {
-            message.channel.send(`¡**${message.author.username}**, ${art.message}!`);
+            message.channel.send(`¡**${message.author.globalName}**, ${art.message}!`);
         }
 
         let harem = art.data;

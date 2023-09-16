@@ -26,14 +26,14 @@ module.exports = {
         let player = (await getUser(message.guild.id, message.author.id)).data;
         let harem = (await getHaremCount(message.guild.id, message.author.id)).data;
         let cooldowns = await getCooldowns(message.guild.id);
-        if (cooldowns.status == false) return message.channel.send(`**${message.author.username}**, ocurrió un error: \`${cooldowns.message}\``);
+        if (cooldowns.status == false) return message.channel.send(`**${message.author.globalName}**, ocurrió un error: \`${cooldowns.message}\``);
 
         let msg = `${userInfo(player)}\n\n${haremInfo(harem)}\n\n${guildInfo(cooldowns)}`;
 
         let embed = new EmbedBuilder()
             .setColor(player.harem.color)
             .setAuthor({
-                name: `Estado de ${message.author.username}`,
+                name: `Estado de ${message.author.globalName}`,
                 iconURL: getAvatarURL(message.author)
             })
             .setDescription(msg);

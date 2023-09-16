@@ -2,7 +2,10 @@
     "apis": {
         "booru": {
             "displayTags": 8,
-            "queryTags": ["-video", "smile"]
+            "queryTags": [
+                "rating:general",
+                "rating:general"
+            ]
         },
         "autowaifu": {
             "cooldown": 3800

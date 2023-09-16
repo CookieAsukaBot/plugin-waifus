@@ -13,15 +13,15 @@ module.exports = {
     cooldown: 5,
     async execute (message, args) {
         let page = 0;
-        if (!args) return message.channel.send(`¡${message.author.username}, obten ayuda sobre el comando escribiendo \`${process.env.prefix}help ${this.name}\`!`);
+        if (!args) return message.channel.send(`¡${message.author.globalName}, obten ayuda sobre el comando escribiendo \`${process.env.prefix}help ${this.name}\`!`);
 
         let search = args.join(" ");
-        if (search.length <= 2) return message.channel.send(`¡**${message.author.username}**, se requiere de __al menos 3 caracteres__ para realizar una búsqueda!`);
-        if (search.length > 16) return message.channel.send(`¡**${message.author.username}**, sobrepasaste el __límite de caracteres__ (utiliza de 3 a 16)!`);
+        if (search.length <= 2) return message.channel.send(`¡**${message.author.globalName}**, se requiere de __al menos 3 caracteres__ para realizar una búsqueda!`);
+        if (search.length > 16) return message.channel.send(`¡**${message.author.globalName}**, sobrepasaste el __límite de caracteres__ (utiliza de 3 a 16)!`);
 
         let characters = await getCharacter(search.trim());
         if (characters.status == false) {
-            message.channel.send(`¡**${message.author.username}**, ${characters.message}!`);
+            message.channel.send(`¡**${message.author.globalName}**, ${characters.message}!`);
         }
 
         let harem = characters.data;

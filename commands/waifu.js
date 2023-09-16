@@ -27,7 +27,7 @@ const replyWithAlreadyClaimed = async (data) => {
 
 	model.owner = await getClaimOwner(message.guild.id, bot, model.owner);
 	embed.setAuthor({
-		name: `${formatedClaimType(model.type, model.gender)} de ${model.owner.username}`,
+		name: `${formatedClaimType(model.type, model.gender)} de ${model.owner.globalName}`,
 		iconURL: model.owner.avatarURL
 	});
 	embed.setColor(model.owner.color);
@@ -56,12 +56,12 @@ module.exports = {
     cooldown: 1,
     async execute (message, args, bot) {
 		// Comprobar si puede tirar
-		let canRoll = await userCanRoll(message.guild.id, message.author.id, message.author.username);
+		let canRoll = await userCanRoll(message.guild.id, message.author.id, message.author.globalName);
 		if (canRoll.status == false) return message.channel.send(canRoll.message);
 
 		// Autoroll: previene la duplicación de rolls en caso de que se utilicen ambos comandos
 		let uuid = message.guild.id + message.author.id;
-		if (bot?.waifus?.blacklist[uuid]?.uuid == uuid) return message.channel.send(`¡**${message.author.username}**, __no__ puedes usar el comando __ahora mismo__!\nEspera a que terminen tus rolls.`);
+		if (bot?.waifus?.blacklist[uuid]?.uuid == uuid) return message.channel.send(`¡**${message.author.globalName}**, __no__ puedes usar el comando __ahora mismo__!\nEspera a que terminen tus rolls.`);
 
 		// Generar roll
 		let model = await getRandomRoll(message.guild.id);
@@ -89,7 +89,7 @@ module.exports = {
 		} else {
 			embed.setColor(process.env.BOT_COLOR);
 			embed.setAuthor({
-				name: `Random ${formatedClaimType(model.type, model.gender, true)} para ${message.author.username}`,
+				name: `Random ${formatedClaimType(model.type, model.gender, true)} para ${message.author.globalName}`,
 				iconURL: getAvatarURL(message.author)
 			});
 		}
@@ -128,7 +128,7 @@ module.exports = {
 			}
 
 			collector.on('collect', async (reaction, user) => {
-				let tryClaim = await claim(message.guild.id, user.id, user.username, model);
+				let tryClaim = await claim(message.guild.id, user.id, user.globalName, model);
 				if (tryClaim.status == false) {
 					return message.channel.send(tryClaim.message);
 				} else if (tryClaim.status == true) {
@@ -145,14 +145,14 @@ module.exports = {
 					// Actualizar embed
 					embed.setColor(claimedBy.color);
 					embed.setAuthor({
-						name: `${formatedClaimType(model.type, model.gender)} ${claimedMessage(model.type, model.gender)} por ${claimedBy.username}`,
+						name: `${formatedClaimType(model.type, model.gender)} ${claimedMessage(model.type, model.gender)} por ${claimedBy.globalName}`,
 						iconURL: claimedBy.avatarURL
 					});
 					embed.setDescription(model.description.toString());
 
 					await msg.edit({ embeds: [embed] });
 					await msg.reply({
-						content: `💖 ¡**${claimedBy.username}** reclamó su ${formatedClaimType(model.type, model.gender)}! 💖` // todo: ¿mensaje personalizable por el usuario?
+						content: `💖 ¡**${claimedBy.globalName}** reclamó su ${formatedClaimType(model.type, model.gender)}! 💖` // todo: ¿mensaje personalizable por el usuario?
 					});
 				}
 			});

@@ -17,7 +17,7 @@ module.exports = {
         let page = 0;
         let harem = await find(message.guild.id, message.author.id);
 
-        if (harem.status == false) return message.channel.send(`¡**${message.author.username}**, ${harem.message}!`);
+        if (harem.status == false) return message.channel.send(`¡**${message.author.globalName}**, ${harem.message}!`);
 
         // Obtener configuración del usuario
         let player = (await getUser(message.guild.id, message.author.id)).data;
@@ -26,7 +26,7 @@ module.exports = {
         let embed = new EmbedBuilder()
             .setColor(player.harem.color)
             .setAuthor({
-                name: `Lista de deseos de ${message.author.username}`,
+                name: `Lista de deseos de ${message.author.globalName}`,
                 iconURL: getAvatarURL(message.author)
             })
             .setDescription(haremDescriptionType({
