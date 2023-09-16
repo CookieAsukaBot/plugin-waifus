@@ -42,7 +42,7 @@ module.exports = {
 
         // Comprobar mención
         let mention = message.mentions.members.first();
-        if (!mention || mention.user.bot) return message.channel.send(`¡**${message.author.globalName}**, menciona a un usuario!`); // todo: mostrar un mensaje más claro
+        if (!mention || mention.user.bot || mention.user.id == message.author.id) return message.channel.send(`¡**${message.author.globalName}**, menciona a un usuario!`); // todo: mostrar un mensaje más claro
 
         let embed = new EmbedBuilder()
             .setColor(player.harem.color)
