@@ -38,8 +38,8 @@ const userCanRoll = async (guild, userID, username) => {
     } catch (error) {
         console.error(error);
         status.failed("DB_ERROR");
-    };
-};
+    }
+}
 
 /**
  * Actualiza el usuario (su estadística y rolls disponibles).
@@ -61,8 +61,8 @@ const userUseRoll = async (guild, userID) => {
     } catch (error) {
         console.error(error);
         status.failed("DB_ERROR");
-    };
-};
+    }
+}
 
 /**
  * Genera un número aleatorio, después base al número se elige una función de una API.
@@ -89,8 +89,8 @@ const getRandomRoll = async (guild) => {
     } catch (error) {
         console.error(error);
         status.failed("BOT_ERROR");
-    };
-};
+    }
+}
 
 /**
  * Datos para el embed.
@@ -109,8 +109,8 @@ const getClaimOwner = async (guild, bot, id) => {
         username: user.globalName,
         avatarURL: avatar,
         color: player.harem.color
-    };
-};
+    }
+}
 
 /**
  * Genera un controlador para el harem.
@@ -165,7 +165,7 @@ const haremReactionController = async (data, reactions) => {
             emoji: '⭕',
             requirement: harem.length > 0
         },
-    };
+    }
     let cache = {};
     let haremSize = harem.length;
 
@@ -181,7 +181,7 @@ const haremReactionController = async (data, reactions) => {
         let emoji = cache[reaction]?.emoji;
         if (emoji === undefined) return;
         return cache[reaction].emoji;
-    };
+    }
 
     // Collector
     let collector = await msg.createReactionCollector({
@@ -271,7 +271,7 @@ const haremReactionController = async (data, reactions) => {
                     return;
                 }
                 break;
-        };
+        }
 
         await msg.edit({
             embeds: [editControllerEmbed(embed, harem, haremSize, page, random)]
@@ -280,7 +280,7 @@ const haremReactionController = async (data, reactions) => {
     collector.on('end', async () => {try{
         await msg.reactions.removeAll();
     }catch(error){}});
-};
+}
 
 /**
  * Edita el embed del mensaje.
@@ -308,7 +308,7 @@ const editControllerEmbed = (embed, harem, haremSize, page, random) => {
     embed.setTimestamp(harem[page]?.user?.claimedAt || harem[page]?.createdAt || Date.now);
 
     return embed;
-};
+}
 
 /**
  * Genera un controlador para el divorcio.
@@ -367,7 +367,7 @@ const divorceReactionController = (data) => {
                 } catch (error) {};
             });
         });
-};
+}
 
 /**
  * Genera un controlador para el regalo.
@@ -436,7 +436,7 @@ const giftReactionController = (data) => {
             });
         });
 
-};
+}
 
 module.exports = {
     userCanRoll,
@@ -444,6 +444,7 @@ module.exports = {
     getRandomRoll,
     getClaimOwner,
     haremReactionController,
+    editControllerEmbed,
     divorceReactionController,
     giftReactionController,
-};
+}
