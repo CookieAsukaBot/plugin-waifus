@@ -14,15 +14,15 @@ const getGuild = async (id) => {
     try {
         let guild = await Guild.findOne({ id });
         if (!guild) {
-            guild = await new Guild({ id });
+            guild = new Guild({ id });
             await guild.save();
-        };
+        }
         return status.success("SUCCESS", guild);
     } catch (error) {
         console.log(error);
         return status.failed("DB_ERROR");
-    };
-};
+    }
+}
 
 /**
  * Comprueba la válides de los campos y actualiza los datos.
@@ -49,8 +49,8 @@ const getGuild = async (id) => {
     } catch (error) {
         console.log(error);
         return status.failed("DB_ERROR");
-    };
-};
+    }
+}
 
 /**
  * Comprueba la válides de los campos y actualiza los datos.
@@ -76,8 +76,8 @@ const changeLimits = async (id, newData) => {
     } catch (error) {
         console.log(error);
         return status.failed("DB_ERROR");
-    };
-};
+    }
+}
 
 /**
  * Obtiene el tiempo (de manera leíble) de cuándo serán los siguientes reinicios.
@@ -94,8 +94,8 @@ const getCooldowns = async (id) => {
     } catch (error) {
         console.log(error);
         return status.failed("DB_ERROR");
-    };
-};
+    }
+}
 
 /**
  * Actualiza los claims a base del servidor y asigna el tiempo del siguiente reinicio
@@ -110,8 +110,8 @@ const updateClaims = async (server) => {
 
     await Guild.updateOne({ id: server.id }, {
         "next.claims": moment().add(server.cooldowns.claims, 'minutes').set({ seconds: 0, milliseconds: 0 })
-    });
-};
+    })
+}
 
 /**
  * Actualiza los rolls a base del servidor y asigna el tiempo del siguiente reinicio
@@ -128,8 +128,8 @@ const updateRolls = async (server) => {
 
     await Guild.updateOne({ id: server.id }, {
         "next.rolls": moment().add(server.cooldowns.rolls, 'minutes').set({ seconds: 0, milliseconds: 0 })
-    });
-};
+    })
+}
 
 // banning
 
@@ -140,4 +140,4 @@ module.exports = {
     getCooldowns,
     updateClaims,
     updateRolls
-};
+}
