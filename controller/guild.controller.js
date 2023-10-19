@@ -109,8 +109,8 @@ const updateClaims = async (server) => {
     },{ "fun.canClaim": true });
 
     await Guild.updateOne({ id: server.id }, {
-        "next.claims": moment().add(server.cooldowns.claims, 'minutes').set({ seconds: 0, milliseconds: 0 })
-    })
+        "next.claims": moment().add(server.cooldowns.claims, 'minutes')
+    });
 }
 
 /**
@@ -127,8 +127,8 @@ const updateRolls = async (server) => {
     });
 
     await Guild.updateOne({ id: server.id }, {
-        "next.rolls": moment().add(server.cooldowns.rolls, 'minutes').set({ seconds: 0, milliseconds: 0 })
-    })
+        "next.rolls": moment().add(server.cooldowns.rolls, 'minutes')
+    });
 }
 
 // banning
