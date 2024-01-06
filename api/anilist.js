@@ -53,8 +53,8 @@ const anilistRandomCharacter = async () => {
     `;
 
     let variables = {
-        ids: getRandomNumbers(12, 1, 246844)
-    };
+        ids: getRandomNumbers(12, 1, 310557)
+    }
 
     let payload = {
         query,
