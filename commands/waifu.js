@@ -27,7 +27,7 @@ const replyWithAlreadyClaimed = async (data) => {
 
 	model.owner = await getClaimOwner(message.guild.id, bot, model.owner);
 	embed.setAuthor({
-		name: `${formatedClaimType(model.type, model.gender)} de ${model.owner.globalName}`,
+		name: `${formatedClaimType(model.type, model.gender)} de ${model.owner.username}`,
 		iconURL: model.owner.avatarURL
 	});
 	embed.setColor(model.owner.color);
