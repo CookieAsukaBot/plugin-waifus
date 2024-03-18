@@ -145,14 +145,14 @@ module.exports = {
 					// Actualizar embed
 					embed.setColor(claimedBy.color);
 					embed.setAuthor({
-						name: `${formatedClaimType(model.type, model.gender)} ${claimedMessage(model.type, model.gender)} por ${claimedBy.globalName}`,
+						name: `${formatedClaimType(model.type, model.gender)} ${claimedMessage(model.type, model.gender)} por ${claimedBy.username}`,
 						iconURL: claimedBy.avatarURL
 					});
 					embed.setDescription(model.description.toString());
 
 					await msg.edit({ embeds: [embed] });
 					await msg.reply({
-						content: `💖 ¡**${claimedBy.globalName}** reclamó su ${formatedClaimType(model.type, model.gender)}! 💖` // todo: ¿mensaje personalizable por el usuario?
+						content: `💖 ¡**${claimedBy.username}** reclamó su ${formatedClaimType(model.type, model.gender)}! 💖` // todo: ¿mensaje personalizable por el usuario?
 					});
 				}
 			});
