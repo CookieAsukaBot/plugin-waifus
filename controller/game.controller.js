@@ -304,8 +304,13 @@ const editControllerEmbed = (embed, harem, haremSize, page, random) => {
     embed.setImage(harem[page].metadata.url);
     embed.setFooter({
         text: `${page + 1}/${haremSize}`
-    })
-    embed.setTimestamp(harem[page]?.user?.claimedAt || harem[page]?.createdAt || Date.now);
+    });
+
+    if (harem[page]?.user?.claimedAt) {
+        embed.setTimestamp(harem[page]?.user?.claimedAt);
+    } else if (harem[page]?.createdAt) {
+        embed.setTimestamp(harem[page]?.createdAt);
+    }
 
     return embed;
 }
