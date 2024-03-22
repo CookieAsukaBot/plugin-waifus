@@ -287,7 +287,9 @@ const haremReactionController = async (data, reactions) => {
  * 
  * @param {*} embed 
  * @param {Object} harem 
+ * @param {Int} haremSize
  * @param {Int} page 
+ * @param {Object} random
  * @returns retorna el embed editado.
  */
 const editControllerEmbed = (embed, harem, haremSize, page, random) => {
